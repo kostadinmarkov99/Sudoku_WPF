@@ -75,7 +75,7 @@
 
             <!--Creating the top left Combobox-->
             <Canvas Grid.Row="0"
-                    Grid.Column="0">
+                    Grid.Column="0" Margin="0,-23,0.4,23.4">
                 <Label Content="Difficulty Level:"
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Top" 
@@ -92,25 +92,39 @@
                     <ComboBoxItem Name="hard">Hard</ComboBoxItem>
                     <ComboBoxItem Name="expert">Expert</ComboBoxItem>
                 </ComboBox>
+
+                <Button Style="{StaticResource ButtonBaseStyle}" x:Name="btnNewGame" Click="btnNewGame_Click" Canvas.Left="30" Canvas.Top="104" Height="34" Width="140" IsEnabled="{Binding IsEnabledStartButton}">Load New Game</Button>
             </Canvas>
 
             <!--Creating the top left button-->
             <Canvas Grid.Row="1"
                     Grid.Column="0">
-                <Button Style="{StaticResource ButtonBaseStyle}" x:Name="btnNewGame" Click="btnNewGame_Click" Canvas.Left="25" Canvas.Top="23" Height="34" Width="140">Load New Game</Button>
+
+                <Label HorizontalAlignment="Left"
+                    Height="39" 
+                    VerticalAlignment="Top"
+                    Width="153"
+                    Content="{Binding Path=ElapsedTime, Mode=OneWay}" Canvas.Left="25" />
+
+                <Button x:Name="btnResume" Click="btnResume_Click" Canvas.Left="25" Canvas.Top="44" Height="30" Width="153" Visibility="{Binding IsVisibleResumeButton,  Mode=TwoWay}" RenderTransformOrigin="0.825,0.787">Resume Game</Button>
+                <Button x:Name="btnPause" Click="btnPause_Click" Canvas.Left="25" Canvas.Top="44" Height="30" Width="153" Visibility="{Binding IsVisiblePausedButton,  Mode=TwoWay}" IsEnabled="{Binding IsEnabledPausedButton,  Mode=TwoWay}" RenderTransformOrigin="0.825,0.787">Pause Game</Button>
+
+                <Button x:Name="btnReset" Click="btnReset_Click" Canvas.Left="25" Canvas.Top="97" Height="31" Width="153"  IsEnabled="{Binding IsEnabledResetButton,  Mode=TwoWay}" RenderTransformOrigin="0.825,0.787">Reset Game</Button>
             </Canvas>
             <!--Creating the botom left buttons-->
             <Canvas Grid.Row="2"
                     Grid.Column="0">
-                <Button x:Name="btnUndo" Click="btnUndo_Click" Canvas.Left="10" Canvas.Top="10" Height="30" Width="55" IsEnabled="False">Undo</Button>
-                <Button  x:Name="btnRedo" Click="btnRedo_Click" Canvas.Left="105" Canvas.Top="10" Height="30" Width="65" IsEnabled="False">Redo</Button>
 
-                <Button  x:Name="btnCancel" Click="btnCancel_Click" Canvas.Left="17" Canvas.Top="78" Height="30" Width="153" >Cancel</Button>
+                <Button  x:Name="btnCheck" Click="btnCheck_Click" Canvas.Left="27" IsEnabled="{Binding IsEnabledCheckedButton,  Mode=TwoWay}" Canvas.Top="19" Height="39" Width="153" >Check</Button>
+
+                <Button  x:Name="btnCancel" Click="btnCancel_Click" Canvas.Left="27" Canvas.Top="98" Height="30" Width="153" >Cancel</Button>
             </Canvas>
 
+            <StackPanel></StackPanel>
             <!--Creating the top left rectangle-->
             <Grid Grid.Row="0"
-                  Grid.Column="1">
+                  Grid.Column="1" Visibility="{Binding IsVisibleTopLeftRectangle,  Mode=TwoWay}">
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="22*"/>
                     <ColumnDefinition Width="22*"/>
@@ -138,7 +152,7 @@
             </Grid>
             <!--Creating the top middle rectangle-->
             <Grid Grid.Row="0" 
-                  Grid.Column="2">
+                  Grid.Column="2" Visibility="{Binding IsVisibleToMiddleRectangle,  Mode=TwoWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -165,7 +179,7 @@
             </Grid>
             <!--Creating the top right rectangle-->
             <Grid Grid.Row="0"
-                  Grid.Column="3">
+                  Grid.Column="3" Visibility="{Binding IsVisibleTopRightRectangle,  Mode=TwoWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -198,34 +212,34 @@
 
             <!--Creating the middle left rectangle-->
             <Grid Grid.Row="1" 
-                  Grid.Column="1">
+                  Grid.Column="1" Visibility="{Binding IsVisibleMiddleLeftRectangle,  Mode=TwoWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="Auto" MinHeight="47.2"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="4*"/>
                 </Grid.RowDefinitions>
 
 
-                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Get30, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled30}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick30"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Get31, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled31}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick31"/>
-                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Get32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled32}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick32"/>
+                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Get30, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled30}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick30" Margin="0,0,0.4,0.2"/>
+                <TextBox Grid.Row="0" Text="{Binding Get31, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled31}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick31" Grid.ColumnSpan="3" Margin="66,0,65.4,0.2"/>
+                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Get32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled32}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick32" Margin="0.2,0,0.4,0.2"/>
 
-                <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding Get40, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled40}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick40"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Get41, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled41}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick41"/>
-                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Get42, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled42}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick42"/>
+                <TextBox Grid.Column="0" Text="{Binding Get40, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled40}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick40" Margin="0,47,0.4,42.4" Grid.RowSpan="3"/>
+                <TextBox Text="{Binding Get41, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled41}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick41" Grid.ColumnSpan="3" Margin="66,47,65.4,42.4" Grid.RowSpan="3"/>
+                <TextBox Grid.Column="2" Text="{Binding Get42, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled42}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick42" Margin="0.2,47,0.4,42.4" Grid.RowSpan="3"/>
 
-                <TextBox Grid.Row="2" Grid.Column="0" Text="{Binding Get50, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled50}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick50"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Get51, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled51}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick51"/>
-                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Get52, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled52}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick52"/>
+                <TextBox Grid.Row="2" Grid.Column="0" Text="{Binding Get50, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled50}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick50" Margin="0,9.6,0.4,0.4"/>
+                <TextBox Grid.Row="2" Text="{Binding Get51, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled51}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick51" Grid.ColumnSpan="3" Margin="66,9.6,65.4,0.4"/>
+                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Get52, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled52}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick52" Margin="0.2,9.6,0.4,0.4"/>
             </Grid>
             <!--Creating the middle middle rectangle-->
             <Grid Grid.Row="1"
-                  Grid.Column="2">
+                  Grid.Column="2" Visibility="{Binding IsVisibleMiddleMiddleRectangle,  Mode=TwoWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -251,7 +265,7 @@
             </Grid>
             <!--Creating the top middle rectangle-->
             <Grid Grid.Row="1" 
-                  Grid.Column="3">
+                  Grid.Column="3" Visibility="{Binding IsVisibleMiddleRightRectangle,  Mode=TwoWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -280,7 +294,7 @@
 
             <!--Creating the bottom left rectangle-->
             <Grid Grid.Row="2"
-                  Grid.Column="1">
+                  Grid.Column="1" Visibility="{Binding IsVisibleBottomLeftRectangle,  Mode=TwoWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -306,7 +320,7 @@
             </Grid>
             <!--Creating the bottom middle rectangle-->
             <Grid Grid.Row="2" 
-                  Grid.Column="2">
+                  Grid.Column="2" Visibility="{Binding IsVisibleBottomMiddleRectangle,  Mode=TwoWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -333,7 +347,7 @@
             </Grid>
             <!--Creating the bottom right rectangle-->
             <Grid Grid.Row="2"
-                  Grid.Column="3">
+                  Grid.Column="3" Visibility="{Binding IsVisibleBottomRightRectangle,  Mode=TwoWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -352,7 +366,7 @@
                 <Rectangle  Grid.Column="2"/>
 
                 <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Get66, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled66}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" Background="AliceBlue" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick66"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Get67, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled67}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" Background="AliceBlue" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick76"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Get67, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled67}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" Background="AliceBlue" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick67"/>
                 <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Get68, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled68}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" Background="AliceBlue" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick68"/>
 
                 <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding Get76, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled76}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" Background="AliceBlue" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick76"/>

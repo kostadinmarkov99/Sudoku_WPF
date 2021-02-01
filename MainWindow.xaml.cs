@@ -43,12 +43,12 @@ namespace WpfApp4
 
         private void btnNewGame_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure you want to start a new game?", "Start New Game", System.Windows.MessageBoxButton.YesNo);
-            if (messageBoxResult == MessageBoxResult.Yes){
+            if (Sudoku != null)
+            {
                 ComboBoxItem typeItem = (ComboBoxItem)cboDifficulty.SelectedItem;
                 string difficulty = typeItem.Content.ToString();
 
-                Sudoku.newGame(difficulty);
+                Sudoku.startNewGame(difficulty);
             }
         }
 
@@ -73,19 +73,9 @@ namespace WpfApp4
             }
         }
 
-        private void btnRedo_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btnUndo_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-
+            this.Close();
         }
 
         private void TextBox_MouseDoubleClick00(object sender, MouseButtonEventArgs e)
@@ -892,7 +882,7 @@ namespace WpfApp4
         {
             var objectClicked = (sender as System.Windows.Controls.TextBox);
             bool isReadOnly = objectClicked.IsReadOnly;
-            
+
             if (Sudoku != null && !isReadOnly)
             {
                 Sudoku.CellClicked(8, 2);
@@ -963,6 +953,57 @@ namespace WpfApp4
             if (Sudoku != null && !isReadOnly)
             {
                 Sudoku.CellClicked(8, 8);
+            }
+        }
+
+        private void btnPause_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (Sudoku != null)
+            {
+                Sudoku.PauseGame();
+            }
+        }
+
+        private void btnResume_Click(object sender, RoutedEventArgs e)
+        {
+            if (Sudoku != null)
+            {
+                Sudoku.ResumeGame();
+            }
+        }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            if (Sudoku != null)
+            {
+                Sudoku.ResetGame();
+            }
+        }
+
+        private void btnCheck_Click(object sender, RoutedEventArgs e)
+        {
+            if (Sudoku != null)
+            {
+                Sudoku.CheckResult();
+            }
+        }
+
+        /// <summary>
+        /// Launch the Game Complete dialog.
+        /// </summary>
+        internal void ShowGameCompletedDialog()
+        {
+            GameComplete gameComplete;
+            try
+            {
+                gameComplete = new GameComplete(Sudoku);        // Instantiate a new instance of the window and pass it the ViewModel instance
+                gameComplete.Owner = this;                          // Set the owner to this window
+                gameComplete.ShowDialog();                          // Display the dialog
+            }
+            finally
+            {
+                gameComplete = null;                                // Release the window pointer
             }
         }
     }

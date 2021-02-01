@@ -65,11 +65,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="GameComplete.xaml.cs">
+      <DependentUpon>GameComplete.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GameTimerEventArgs.cs" />
     <Compile Include="InputPad.xaml.cs">
       <DependentUpon>InputPad.xaml</DependentUpon>
     </Compile>
     <Compile Include="NewGamePuzzle.cs" />
     <Compile Include="Sudoku.cs" />
+    <Compile Include="TimerClass.cs" />
+    <Page Include="GameComplete.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="InputPad.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

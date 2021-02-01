@@ -16,3 +16,5 @@ C:\Users\PC\source\repos\WpfApp4\obj\Debug\InputPad.g.cs
 C:\Users\PC\source\repos\WpfApp4\bin\Debug\System.Windows.Forms.Ribbon35.dll
 C:\Users\PC\source\repos\WpfApp4\obj\Debug\InputPad.baml
 C:\Users\PC\source\repos\WpfApp4\obj\Debug\WpfApp4.csproj.CopyComplete
+C:\Users\PC\source\repos\WpfApp4\obj\Debug\GameComplete.g.cs
+C:\Users\PC\source\repos\WpfApp4\obj\Debug\GameComplete.baml

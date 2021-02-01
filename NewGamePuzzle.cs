@@ -8,7 +8,8 @@ namespace WpfApp4
 {
     public class NewGamePuzzle
     {
-        string[,] mat;
+        private string[,] mat;
+        private string[,] solvedMatrix = new string[9, 9];
         int N; // number of columns/rows. 
         int SRN; // square root of N 
         int K; // No. Of missing digits 
@@ -32,6 +33,15 @@ namespace WpfApp4
             mat = new string[N, N];
         }
 
+        // Get the Solved Matrix
+        public string[,] SolvedMatrix
+        {
+            get { return solvedMatrix; }
+            set { 
+                solvedMatrix = value;
+            }
+        }
+
         // Sudoku Generator 
         public void fillValues()
         {
@@ -40,6 +50,14 @@ namespace WpfApp4
 
             // Fill remaining blocks 
             fillRemaining(0, SRN);
+
+            for (int row = 0; row < 9; row++)
+            {
+                for (int col = 0; col < 9; col++)
+                {
+                    solvedMatrix[row, col] = mat[row, col];
+                }
+            }
 
             // Remove Randomly K digits to make game 
             removeKDigits();
@@ -171,6 +189,7 @@ namespace WpfApp4
         public void removeKDigits()
         {
             int count = K;
+
             while (count != 0)
             {
                 int cellId = randomGenerator(N * N);
