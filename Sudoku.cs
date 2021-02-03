@@ -12,13 +12,585 @@ namespace WpfApp4
 {
     public class Sudoku : INotifyPropertyChanged
     {
-        private string[,] matrix = new string[9,9];
+        private string[,] matrix = new string[9, 9];
         private string[,] startingMatrix;
         private string[,] solvedMatrix;
         private MainWindow _view;                               // Save the window
         private TimerClass _timer = new TimerClass();                              // Instantiate a new timer class
         private static Sudoku _instance;
         private string _gameTimeElapsed;
+        Stack<Tuple<Tuple<int, int>, string>> moves = new Stack<Tuple<Tuple<int, int>, string>>();
+        Stack<Tuple<Tuple<int, int>, string>> movesRedo = new Stack<Tuple<Tuple<int, int>, string>>();
+        Stack<Tuple<Tuple<int, int>, string>> movesCopy = new Stack<Tuple<Tuple<int, int>, string>>();
+        Stack<Tuple<Tuple<int, int>, string>> movesRedoCopy = new Stack<Tuple<Tuple<int, int>, string>>();
+        int lastRowInStack = -1;
+        int lastColInStack = -1;
+        bool doNotFill = false;
+        private int movesNumber;
+
+        public int MovesNumber
+        {
+            get { return movesNumber; }
+            set
+            {
+                movesNumber = value;
+            }
+        }
+
+        private List<string> last00 = new List<string>();
+        private List<string> last01 = new List<string>();
+        private List<string> last02 = new List<string>();
+        private List<string> last03 = new List<string>();
+        private List<string> last04 = new List<string>();
+        private List<string> last05 = new List<string>();
+        private List<string> last06 = new List<string>();
+        private List<string> last07 = new List<string>();
+        private List<string> last08 = new List<string>();
+        private List<string> last10 = new List<string>();
+        private List<string> last11 = new List<string>();
+        private List<string> last12 = new List<string>();
+        private List<string> last13 = new List<string>();
+        private List<string> last14 = new List<string>();
+        private List<string> last15 = new List<string>();
+        private List<string> last16 = new List<string>();
+        private List<string> last17 = new List<string>();
+        private List<string> last18 = new List<string>();
+        private List<string> last20 = new List<string>();
+        private List<string> last21 = new List<string>();
+        private List<string> last22 = new List<string>();
+        private List<string> last23 = new List<string>();
+        private List<string> last24 = new List<string>();
+        private List<string> last25 = new List<string>();
+        private List<string> last26 = new List<string>();
+        private List<string> last27 = new List<string>();
+        private List<string> last28 = new List<string>();
+        private List<string> last30 = new List<string>();
+        private List<string> last31 = new List<string>();
+        private List<string> last32 = new List<string>();
+        private List<string> last33 = new List<string>();
+        private List<string> last34 = new List<string>();
+        private List<string> last35 = new List<string>();
+        private List<string> last36 = new List<string>();
+        private List<string> last37 = new List<string>();
+        private List<string> last38 = new List<string>();
+        private List<string> last40 = new List<string>();
+        private List<string> last41 = new List<string>();
+        private List<string> last42 = new List<string>();
+        private List<string> last43 = new List<string>();
+        private List<string> last44 = new List<string>();
+        private List<string> last45 = new List<string>();
+        private List<string> last46 = new List<string>();
+        private List<string> last47 = new List<string>();
+        private List<string> last48 = new List<string>();
+        private List<string> last50 = new List<string>();
+        private List<string> last51 = new List<string>();
+        private List<string> last52 = new List<string>();
+        private List<string> last53 = new List<string>();
+        private List<string> last54 = new List<string>();
+        private List<string> last55 = new List<string>();
+        private List<string> last56 = new List<string>();
+        private List<string> last57 = new List<string>();
+        private List<string> last58 = new List<string>();
+        private List<string> last60 = new List<string>();
+        private List<string> last61 = new List<string>();
+        private List<string> last62 = new List<string>();
+        private List<string> last63 = new List<string>();
+        private List<string> last64 = new List<string>();
+        private List<string> last65 = new List<string>();
+        private List<string> last66 = new List<string>();
+        private List<string> last67 = new List<string>();
+        private List<string> last68 = new List<string>();
+        private List<string> last70 = new List<string>();
+        private List<string> last71 = new List<string>();
+        private List<string> last72 = new List<string>();
+        private List<string> last73 = new List<string>();
+        private List<string> last74 = new List<string>();
+        private List<string> last75 = new List<string>();
+        private List<string> last76 = new List<string>();
+        private List<string> last77 = new List<string>();
+        private List<string> last78 = new List<string>();
+        private List<string> last80 = new List<string>();
+        private List<string> last81 = new List<string>();
+        private List<string> last82 = new List<string>();
+        private List<string> last83 = new List<string>();
+        private List<string> last84 = new List<string>();
+        private List<string> last85 = new List<string>();
+        private List<string> last86 = new List<string>();
+        private List<string> last87 = new List<string>();
+        private List<string> last88 = new List<string>();
+
+        public List<string> Last00
+        {
+            get { return last00; }
+            set { last00 = value; }
+        }
+
+        public List<string> Last01
+        {
+            get { return last01; }
+            set { last01 = value; }
+        }
+
+        public List<string> Last02
+        {
+            get { return last02; }
+            set { last02 = value; }
+        }
+
+        public List<string> Last03
+        {
+            get { return last03; }
+            set { last03 = value; }
+        }
+
+        public List<string> Last04
+        {
+            get { return last04; }
+            set { last04 = value; }
+        }
+
+        public List<string> Last05
+        {
+            get { return last05; }
+            set { last05 = value; }
+        }
+
+        public List<string> Last06
+        {
+            get { return last06; }
+            set { last06 = value; }
+        }
+        public List<string> Last07
+        {
+            get { return last07; }
+            set { last07 = value; }
+        }
+
+        public List<string> Last08
+        {
+            get { return last08; }
+            set { last08 = value; }
+        }
+
+        public List<string> Last10
+        {
+            get { return last10; }
+            set { last10 = value; }
+        }
+
+        public List<string> Last11
+        {
+            get { return last11; }
+            set { last11 = value; }
+        }
+
+        public List<string> Last12
+        {
+            get { return last12; }
+            set { last12 = value; }
+        }
+
+        public List<string> Last13
+        {
+            get { return last13; }
+            set { last13 = value; }
+        }
+
+        public List<string> Last14
+        {
+            get { return last14; }
+            set { last14 = value; }
+        }
+
+        public List<string> Last15
+        {
+            get { return last15; }
+            set { last15 = value; }
+        }
+
+        public List<string> Last16
+        {
+            get { return last16; }
+            set { last16 = value; }
+        }
+        public List<string> Last17
+        {
+            get { return last17; }
+            set { last17 = value; }
+        }
+
+        public List<string> Last18
+        {
+            get { return last18; }
+            set { last18 = value; }
+        }
+        public List<string> Last20
+        {
+            get { return last20; }
+            set { last20 = value; }
+        }
+
+        public List<string> Last21
+        {
+            get { return last21; }
+            set { last21 = value; }
+        }
+
+        public List<string> Last22
+        {
+            get { return last22; }
+            set { last22 = value; }
+        }
+
+        public List<string> Last23
+        {
+            get { return last23; }
+            set { last23 = value; }
+        }
+
+        public List<string> Last24
+        {
+            get { return last24; }
+            set { last24 = value; }
+        }
+
+        public List<string> Last25
+        {
+            get { return last25; }
+            set { last25 = value; }
+        }
+
+        public List<string> Last26
+        {
+            get { return last26; }
+            set { last26 = value; }
+        }
+        public List<string> Last27
+        {
+            get { return last27; }
+            set { last27 = value; }
+        }
+
+        public List<string> Last28
+        {
+            get { return last28; }
+            set { last28 = value; }
+        }
+        public List<string> Last30
+        {
+            get { return last30; }
+            set { last30 = value; }
+        }
+
+        public List<string> Last31
+        {
+            get { return last31; }
+            set { last31 = value; }
+        }
+
+        public List<string> Last32
+        {
+            get { return last32; }
+            set { last32 = value; }
+        }
+
+        public List<string> Last33
+        {
+            get { return last33; }
+            set { last33 = value; }
+        }
+
+        public List<string> Last34
+        {
+            get { return last34; }
+            set { last34 = value; }
+        }
+
+        public List<string> Last35
+        {
+            get { return last35; }
+            set { last35 = value; }
+        }
+
+        public List<string> Last36
+        {
+            get { return last36; }
+            set { last36 = value; }
+        }
+        public List<string> Last37
+        {
+            get { return last37; }
+            set { last37 = value; }
+        }
+
+        public List<string> Last38
+        {
+            get { return last38; }
+            set { last38 = value; }
+        }
+
+        public List<string> Last40
+        {
+            get { return last40; }
+            set { last40 = value; }
+        }
+
+        public List<string> Last41
+        {
+            get { return last41; }
+            set { last41 = value; }
+        }
+
+        public List<string> Last42
+        {
+            get { return last42; }
+            set { last42 = value; }
+        }
+
+        public List<string> Last43
+        {
+            get { return last43; }
+            set { last43 = value; }
+        }
+
+        public List<string> Last44
+        {
+            get { return last44; }
+            set { last44 = value; }
+        }
+
+        public List<string> Last45
+        {
+            get { return last45; }
+            set { last45 = value; }
+        }
+
+        public List<string> Last46
+        {
+            get { return last46; }
+            set { last46 = value; }
+        }
+        public List<string> Last47
+        {
+            get { return last47; }
+            set { last47 = value; }
+        }
+
+        public List<string> Last48
+        {
+            get { return last48; }
+            set { last48 = value; }
+        }
+
+        public List<string> Last50
+        {
+            get { return last50; }
+            set { last50 = value; }
+        }
+
+        public List<string> Last51
+        {
+            get { return last51; }
+            set { last51 = value; }
+        }
+
+        public List<string> Last52
+        {
+            get { return last52; }
+            set { last52 = value; }
+        }
+
+        public List<string> Last53
+        {
+            get { return last53; }
+            set { last53 = value; }
+        }
+
+        public List<string> Last54
+        {
+            get { return last54; }
+            set { last54 = value; }
+        }
+
+        public List<string> Last55
+        {
+            get { return last55; }
+            set { last55 = value; }
+        }
+
+        public List<string> Last56
+        {
+            get { return last56; }
+            set { last56 = value; }
+        }
+        public List<string> Last57
+        {
+            get { return last57; }
+            set { last57 = value; }
+        }
+
+        public List<string> Last58
+        {
+            get { return last58; }
+            set { last58 = value; }
+        }
+
+        public List<string> Last60
+        {
+            get { return last60; }
+            set { last60 = value; }
+        }
+
+        public List<string> Last61
+        {
+            get { return last61; }
+            set { last61 = value; }
+        }
+
+        public List<string> Last62
+        {
+            get { return last62; }
+            set { last62 = value; }
+        }
+
+        public List<string> Last63
+        {
+            get { return last63; }
+            set { last63 = value; }
+        }
+
+        public List<string> Last64
+        {
+            get { return last64; }
+            set { last64 = value; }
+        }
+
+        public List<string> Last65
+        {
+            get { return last65; }
+            set { last65 = value; }
+        }
+
+        public List<string> Last66
+        {
+            get { return last66; }
+            set { last66 = value; }
+        }
+        public List<string> Last67
+        {
+            get { return last67; }
+            set { last67 = value; }
+        }
+
+        public List<string> Last68
+        {
+            get { return last68; }
+            set { last68 = value; }
+        }
+        public List<string> Last70
+        {
+            get { return last70; }
+            set { last70 = value; }
+        }
+
+        public List<string> Last71
+        {
+            get { return last71; }
+            set { last71 = value; }
+        }
+
+        public List<string> Last72
+        {
+            get { return last72; }
+            set { last72 = value; }
+        }
+
+        public List<string> Last73
+        {
+            get { return last73; }
+            set { last73 = value; }
+        }
+
+        public List<string> Last74
+        {
+            get { return last74; }
+            set { last74 = value; }
+        }
+
+        public List<string> Last75
+        {
+            get { return last75; }
+            set { last75 = value; }
+        }
+
+        public List<string> Last76
+        {
+            get { return last76; }
+            set { last76 = value; }
+        }
+        public List<string> Last77
+        {
+            get { return last77; }
+            set { last77 = value; }
+        }
+
+        public List<string> Last78
+        {
+            get { return last78; }
+            set { last78 = value; }
+        }
+        public List<string> Last80
+        {
+            get { return last80; }
+            set { last80 = value; }
+        }
+
+        public List<string> Last81
+        {
+            get { return last81; }
+            set { last81 = value; }
+        }
+
+        public List<string> Last82
+        {
+            get { return last82; }
+            set { last82 = value; }
+        }
+
+        public List<string> Last83
+        {
+            get { return last83; }
+            set { last83 = value; }
+        }
+
+        public List<string> Last84
+        {
+            get { return last84; }
+            set { last84 = value; }
+        }
+
+        public List<string> Last85
+        {
+            get { return last85; }
+            set { last85 = value; }
+        }
+
+        public List<string> Last86
+        {
+            get { return last86; }
+            set { last86 = value; }
+        }
+        public List<string> Last87
+        {
+            get { return last87; }
+            set { last87 = value; }
+        }
+
+        public List<string> Last88
+        {
+            get { return last88; }
+            set { last88 = value; }
+        }
 
         private bool GameInProgress { get; set; }
 
@@ -82,6 +654,42 @@ namespace WpfApp4
             private set
             {
                 _gameTimeElapsed = string.Format("Your time is {0}.", value);
+            }
+        }
+
+        public Stack<Tuple<Tuple<int, int>, string>> Moves
+        {
+            get { return moves; }
+            set
+            {
+                moves = value;
+            }
+        }
+
+        public Stack<Tuple<Tuple<int, int>, string>> MovesRedo
+        {
+            get { return movesRedo; }
+            set
+            {
+                movesRedo = value;
+            }
+        }
+
+        public Stack<Tuple<Tuple<int, int>, string>> MovesCopy
+        {
+            get { return movesCopy; }
+            set
+            {
+                movesCopy = value;
+            }
+        }
+
+        public Stack<Tuple<Tuple<int, int>, string>> MovesRedoCopy
+        {
+            get { return movesRedoCopy; }
+            set
+            {
+                movesRedoCopy = value;
             }
         }
 
@@ -283,6 +891,7 @@ namespace WpfApp4
         private bool isEnabledResetButton = false;
         private bool isEnabledCheckedButton = false;
 
+        #region IsEnabled Public
         public bool IsEnabledCheckedButton
         {
             get { return isEnabledCheckedButton; }
@@ -1097,6 +1706,53 @@ namespace WpfApp4
         }
         #region Public Getters and Setters for the cell properties
 
+        private bool getThisIsEnabledVal(int row, int col)
+        {
+            string isEnabledProp = "TextBoxEnabled" + row + col;
+
+            // Get the Type object corresponding to Sudoku.
+            Type myType = typeof(Sudoku);
+            // Get the PropertyInfo object by passing the property name.
+            PropertyInfo myIsEnableProp = myType.GetProperty(isEnabledProp);
+            // Update the property name.
+            var res = myIsEnableProp.GetValue(this, null);
+            bool resBoolean = (bool)res;
+            return resBoolean;
+        }
+
+        private void createPushTupple(int row, int col, string value)
+        {
+            bool isThisTextCellEnabled = getThisIsEnabledVal(row, col);
+            if (!isThisTextCellEnabled && value != "")
+            {
+                Tuple<int, int> pos = new Tuple<int, int>(row, col);
+                Tuple<Tuple<int, int>, string> insideTuple = new Tuple<Tuple<int, int>, string>(pos, value);
+
+                string propertyName = "Last" + row + col;
+
+                try
+                {
+                    // Get the Type object corresponding to Sudoku.
+                    Type myType = typeof(Sudoku);
+                    // Get the PropertyInfo object by passing the property name.
+                    PropertyInfo myTextBoxInfoCellProp = myType.GetProperty(propertyName);
+                    // Update the property name.
+                    var res = myTextBoxInfoCellProp.GetValue(this, null);
+
+                    List<string> currentStack = (List<string>)res;
+                    currentStack.Add(value);
+                    myTextBoxInfoCellProp.SetValue(this, currentStack);
+                }
+                catch (NullReferenceException e)
+                {
+                    MessageBox.Show("The property does not exist in Sudoku class." + e.Message);
+                }
+
+                Moves.Push(insideTuple);
+            }
+        }
+
+        #endregion
         #region Get00       
         public string Get00
         {
@@ -1110,6 +1766,8 @@ namespace WpfApp4
                 if (IsTextAllowed(value))
                 {
                     get00 = value;
+
+                    createPushTupple(0, 0, value);
                     Matrix[0, 0] = value;
                     OnPropertyChanged("Get00");
                 }
@@ -1129,6 +1787,13 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    bool isThisTextCellEnabled = getThisIsEnabledVal(0, 1);
+                    if (!isThisTextCellEnabled && value != "")
+                    {
+                        Tuple<int, int> pos = new Tuple<int, int>(0, 1);
+                        Tuple<Tuple<int, int>, string> insideTuple = new Tuple<Tuple<int, int>, string>(pos, value);
+                        Moves.Push(insideTuple);
+                    }
                     Matrix[0, 1] = value;
                     get01 = value;
                     OnPropertyChanged("Get01");
@@ -1149,6 +1814,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(0, 2, value);
                     Matrix[0, 2] = value;
                     get02 = value;
                     OnPropertyChanged("Get02");
@@ -1169,12 +1835,14 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(0, 3, value);
                     get03 = value;
                     Matrix[0, 3] = value;
                     OnPropertyChanged("Get03");
                 }
             }
         }
+
         #endregion
 
         #region Get04
@@ -1189,6 +1857,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(0, 4, value);
                     get04 = value;
                     Matrix[0, 4] = value;
                     OnPropertyChanged("Get04");
@@ -1209,6 +1878,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(0, 5, value);
                     get05 = value;
                     Matrix[0, 5] = value;
                     OnPropertyChanged("Get05");
@@ -1229,6 +1899,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(0, 6, value);
                     Matrix[0, 6] = value;
                     get06 = value;
                     OnPropertyChanged("Get06");
@@ -1249,6 +1920,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(0, 7, value);
                     get07 = value;
                     Matrix[0, 7] = value;
                     OnPropertyChanged("Get07");
@@ -1269,6 +1941,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(0, 8, value);
                     get08 = value;
                     Matrix[0, 8] = value;
                     OnPropertyChanged("Get08");
@@ -1287,6 +1960,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(1, 0, value);
                     get10 = value;
                     Matrix[1, 0] = value;
                     OnPropertyChanged("Get10");
@@ -1305,6 +1979,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(1, 1, value);
                     get11 = value;
                     Matrix[1, 1] = value;
                     OnPropertyChanged("Get11");
@@ -1323,6 +1998,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(1, 2, value);
                     get12 = value;
                     Matrix[1, 2] = value;
                     OnPropertyChanged("Get12");
@@ -1341,6 +2017,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(1, 3, value);
                     get13 = value;
                     Matrix[1, 3] = value;
                     OnPropertyChanged("Get13");
@@ -1359,6 +2036,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(1, 4, value);
                     get14 = value;
                     Matrix[1, 4] = value;
                     OnPropertyChanged("Get14");
@@ -1377,6 +2055,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(1, 5, value);
                     get15 = value;
                     Matrix[1, 5] = value;
                     OnPropertyChanged("Get15");
@@ -1395,6 +2074,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(1, 6, value);
                     get16 = value;
                     Matrix[1, 6] = value;
                     OnPropertyChanged("Get16");
@@ -1413,6 +2093,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(1, 7, value);
                     get17 = value;
                     Matrix[1, 7] = value;
                     OnPropertyChanged("Get17");
@@ -1431,6 +2112,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(1, 8, value);
                     get18 = value;
                     Matrix[1, 8] = value;
                     OnPropertyChanged("Get18");
@@ -1448,6 +2130,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(2, 0, value);
                     get20 = value;
                     Matrix[2, 0] = value;
                     OnPropertyChanged("Get20");
@@ -1466,6 +2149,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(2, 1, value);
                     get21 = value;
                     Matrix[2, 1] = value;
                     OnPropertyChanged("Get21");
@@ -1484,6 +2168,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(2, 2, value);
                     get22 = value;
                     Matrix[2, 2] = value;
                     OnPropertyChanged("Get22");
@@ -1502,6 +2187,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(2, 3, value);
                     get23 = value;
                     Matrix[2, 3] = value;
                     OnPropertyChanged("Get23");
@@ -1520,6 +2206,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(2, 4, value);
                     get24 = value;
                     Matrix[2, 4] = value;
                     OnPropertyChanged("Get24");
@@ -1538,6 +2225,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(2, 5, value);
                     get25 = value;
                     Matrix[2, 5] = value;
                     OnPropertyChanged("Get25");
@@ -1556,6 +2244,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(2, 6, value);
                     get26 = value;
                     Matrix[2, 6] = value;
                     OnPropertyChanged("Get26");
@@ -1574,6 +2263,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(2, 7, value);
                     get27 = value;
                     Matrix[2, 7] = value;
                     OnPropertyChanged("Get27");
@@ -1592,6 +2282,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(2, 8, value);
                     get28 = value;
                     Matrix[2, 8] = value;
                     OnPropertyChanged("Get28");
@@ -1610,6 +2301,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(3, 0, value);
                     get30 = value;
                     Matrix[3, 0] = value;
                     OnPropertyChanged("Get30");
@@ -1628,6 +2320,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(3, 1, value);
                     get31 = value;
                     Matrix[3, 1] = value;
                     OnPropertyChanged("Get31");
@@ -1646,6 +2339,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(3, 2, value);
                     get32 = value;
                     Matrix[3, 2] = value;
                     OnPropertyChanged("Get32");
@@ -1664,6 +2358,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(3, 3, value);
                     get33 = value;
                     Matrix[3, 3] = value;
                     OnPropertyChanged("Get33");
@@ -1682,6 +2377,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(3, 4, value);
                     get34 = value;
                     Matrix[3, 4] = value;
                     OnPropertyChanged("Get34");
@@ -1700,6 +2396,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(3, 5, value);
                     get35 = value;
                     Matrix[3, 5] = value;
                     OnPropertyChanged("Get35");
@@ -1718,6 +2415,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(3, 6, value);
                     get36 = value;
                     Matrix[3, 6] = value;
                     OnPropertyChanged("Get36");
@@ -1736,6 +2434,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(3, 7, value);
                     get37 = value;
                     Matrix[3, 7] = value;
                     OnPropertyChanged("Get37");
@@ -1754,6 +2453,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(3, 8, value);
                     get38 = value;
                     Matrix[3, 8] = value;
                     OnPropertyChanged("Get38");
@@ -1772,6 +2472,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(4, 0, value);
                     get40 = value;
                     Matrix[4, 0] = value;
                     OnPropertyChanged("Get40");
@@ -1790,6 +2491,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(4, 1, value);
                     get41 = value;
                     Matrix[4, 1] = value;
                     OnPropertyChanged("Get41");
@@ -1808,6 +2510,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(4, 2, value);
                     get42 = value;
                     Matrix[4, 2] = value;
                     OnPropertyChanged("Get42");
@@ -1826,6 +2529,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(4, 3, value);
                     get43 = value;
                     Matrix[4, 3] = value;
                     OnPropertyChanged("Get43");
@@ -1844,6 +2548,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(4, 4, value);
                     get44 = value;
                     Matrix[4, 4] = value;
                     OnPropertyChanged("Get44");
@@ -1862,6 +2567,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(4, 5, value);
                     get45 = value;
                     Matrix[4, 5] = value;
                     OnPropertyChanged("Get45");
@@ -1880,6 +2586,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(4, 6, value);
                     get46 = value;
                     Matrix[4, 6] = value;
                     OnPropertyChanged("Get46");
@@ -1898,6 +2605,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(4, 7, value);
                     get47 = value;
                     Matrix[4, 7] = value;
                     OnPropertyChanged("Get47");
@@ -1916,6 +2624,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(4, 8, value);
                     get48 = value;
                     Matrix[4, 8] = value;
                     OnPropertyChanged("Get48");
@@ -1934,6 +2643,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(5, 0, value);
                     get50 = value;
                     Matrix[5, 0] = value;
                     OnPropertyChanged("Get50");
@@ -1952,6 +2662,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(5, 1, value);
                     get51 = value;
                     Matrix[5, 1] = value;
                     OnPropertyChanged("Get51");
@@ -1970,6 +2681,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(5, 2, value);
                     get52 = value;
                     Matrix[5, 2] = value;
                     OnPropertyChanged("Get52");
@@ -1988,6 +2700,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(5, 3, value);
                     get53 = value;
                     Matrix[5, 3] = value;
                     OnPropertyChanged("Get53");
@@ -2006,6 +2719,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(5, 4, value);
                     get54 = value;
                     Matrix[5, 4] = value;
                     OnPropertyChanged("Get54");
@@ -2024,6 +2738,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(5, 5, value);
                     get55 = value;
                     Matrix[5, 5] = value;
                     OnPropertyChanged("Get55");
@@ -2042,6 +2757,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(5, 6, value);
                     get56 = value;
                     Matrix[5, 6] = value;
                     OnPropertyChanged("Get56");
@@ -2060,6 +2776,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(5, 7, value);
                     get57 = value;
                     Matrix[5, 7] = value;
                     OnPropertyChanged("Get57");
@@ -2078,6 +2795,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(5, 8, value);
                     get58 = value;
                     Matrix[5, 8] = value;
                     OnPropertyChanged("Get58");
@@ -2096,6 +2814,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(6, 0, value);
                     get60 = value;
                     Matrix[6, 0] = value;
                     OnPropertyChanged("Get60");
@@ -2114,6 +2833,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(6, 1, value);
                     get61 = value;
                     Matrix[6, 1] = value;
                     OnPropertyChanged("Get61");
@@ -2132,6 +2852,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(6, 2, value);
                     get62 = value;
                     Matrix[6, 2] = value;
                     OnPropertyChanged("Get62");
@@ -2150,6 +2871,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(6, 3, value);
                     get63 = value;
                     Matrix[6, 3] = value;
                     OnPropertyChanged("Get63");
@@ -2168,6 +2890,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(6, 4, value);
                     get64 = value;
                     Matrix[6, 4] = value;
                     OnPropertyChanged("Get64");
@@ -2186,6 +2909,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(6, 5, value);
                     get65 = value;
                     Matrix[6, 5] = value;
                     OnPropertyChanged("Get65");
@@ -2204,6 +2928,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(6, 6, value);
                     get66 = value;
                     Matrix[6, 6] = value;
                     OnPropertyChanged("Get66");
@@ -2222,6 +2947,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(6, 7, value);
                     get67 = value;
                     Matrix[6, 7] = value;
                     OnPropertyChanged("Get67");
@@ -2240,6 +2966,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(6, 8, value);
                     get68 = value;
                     Matrix[6, 8] = value;
                     OnPropertyChanged("Get68");
@@ -2258,6 +2985,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(7, 0, value);
                     get70 = value;
                     Matrix[7, 0] = value;
                     OnPropertyChanged("Get70");
@@ -2276,6 +3004,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(7, 1, value);
                     get71 = value;
                     Matrix[7, 1] = value;
                     OnPropertyChanged("Get71");
@@ -2294,6 +3023,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(7, 2, value);
                     get72 = value;
                     Matrix[7, 2] = value;
                     OnPropertyChanged("Get72");
@@ -2312,6 +3042,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(7, 3, value);
                     get73 = value;
                     Matrix[7, 3] = value;
                     OnPropertyChanged("Get73");
@@ -2330,6 +3061,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(7, 4, value);
                     get74 = value;
                     Matrix[7, 4] = value;
                     OnPropertyChanged("Get74");
@@ -2348,6 +3080,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(7, 5, value);
                     get75 = value;
                     Matrix[7, 5] = value;
                     OnPropertyChanged("Get75");
@@ -2366,6 +3099,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(7, 6, value);
                     get76 = value;
                     Matrix[7, 6] = value;
                     OnPropertyChanged("Get76");
@@ -2384,6 +3118,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(7, 7, value);
                     get77 = value;
                     Matrix[7, 7] = value;
                     OnPropertyChanged("Get77");
@@ -2402,6 +3137,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(7, 8, value);
                     get78 = value;
                     Matrix[7, 8] = value;
                     OnPropertyChanged("Get78");
@@ -2420,6 +3156,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(8, 0, value);
                     get80 = value;
                     Matrix[8, 0] = value;
                     OnPropertyChanged("Get80");
@@ -2438,6 +3175,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(8, 1, value);
                     get81 = value;
                     Matrix[8, 1] = value;
                     OnPropertyChanged("Get81");
@@ -2456,6 +3194,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(8, 2, value);
                     get82 = value;
                     Matrix[8, 2] = value;
                     OnPropertyChanged("Get82");
@@ -2474,6 +3213,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(8, 3, value);
                     get83 = value;
                     Matrix[8, 3] = value;
                     OnPropertyChanged("Get83");
@@ -2492,6 +3232,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(8, 4, value);
                     get84 = value;
                     Matrix[8, 4] = value;
                     OnPropertyChanged("Get84");
@@ -2510,6 +3251,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(8, 5, value);
                     get85 = value;
                     Matrix[8, 5] = value;
                     OnPropertyChanged("Get85");
@@ -2528,6 +3270,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(8, 6, value);
                     get86 = value;
                     Matrix[8, 6] = value;
                     OnPropertyChanged("Get86");
@@ -2546,6 +3289,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(8, 7, value);
                     get87 = value;
                     Matrix[8, 7] = value;
                     OnPropertyChanged("Get87");
@@ -2565,6 +3309,7 @@ namespace WpfApp4
                 }
                 if (IsTextAllowed(value))
                 {
+                    createPushTupple(8, 8, value);
                     get88 = value;
                     Matrix[8, 8] = value;
                     OnPropertyChanged("Get88");
@@ -2913,6 +3658,197 @@ namespace WpfApp4
             }
         }
 
+        private void buildSudukuByMatrix()
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                for (int col = 0; col < 9; col++)
+                {
+                    string currentElement = Matrix[row, col];
+                    if (currentElement == "0")
+                    {
+                        //Get the name of the isEnabled with the row and col possition
+                        string isEnabledProp = "TextBoxEnabled" + row + col;
+
+                        // Get the Type object corresponding to Sudoku.
+                        Type myType = typeof(Sudoku);
+                        // Get the PropertyInfo object by passing the property name.
+                        PropertyInfo myIsEnableProp = myType.GetProperty(isEnabledProp);
+                        // Update the property name.
+                        myIsEnableProp.SetValue(this, false);
+
+
+                    }
+                    else
+                    {
+                        string propertyName = "Get" + row + col;
+
+                        Matrix[row, col] = currentElement;
+
+                        try
+                        {
+                            // Get the Type object corresponding to Sudoku.
+                            Type myType = typeof(Sudoku);
+                            // Get the PropertyInfo object by passing the property name.
+                            PropertyInfo myTextBoxInfoCellProp = myType.GetProperty(propertyName);
+                            // Update the property name.
+                            if (currentElement == "-2")
+                                myTextBoxInfoCellProp.SetValue(this, "");
+                            else
+                                myTextBoxInfoCellProp.SetValue(this, currentElement);
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            MessageBox.Show("The property does not exist in Sudoku class." + e.Message);
+                        }
+
+                        string sds = "asdasd";
+                        /*PropertyInfo pinfo = typeof(YourType).GetProperty("YourProperty");
+                        object value = pinfo.GetValue(YourInstantiatedObject, null);*/
+                    }
+                }
+            }
+
+
+            MovesRedo = MovesRedoCopy;
+            Moves = new Stack<Tuple<Tuple<int, int>, string>>(movesCopy);
+            MovesCopy = null;
+            MovesRedoCopy = null;
+        }
+
+        public void UndoClicked()
+        {
+            if (Moves.Count == 0)
+            {
+                MessageBox.Show("There no undo!");
+            }
+            else
+            {
+                var lastMove = Moves.Pop();
+
+                var tupLast = lastMove.Item1;
+                int rowLast = tupLast.Item1;
+                int colLast = tupLast.Item2;
+
+                if (Moves.Count == 0)
+                {
+                    MovesRedo.Push(lastMove);
+                    Matrix[rowLast, colLast] = "-2";
+                }
+                else
+                {
+                    var beforeLastEl = Moves.Pop();
+
+                    var tupBeforeLast = beforeLastEl.Item1;
+                    int rowBeforeLast = tupBeforeLast.Item1;
+                    int colBeforeLast = tupBeforeLast.Item2;
+                    string valBeforeLast = beforeLastEl.Item2;
+
+
+                    string propertyName = "Last" + rowLast + colLast;
+                    var currStack = new List<string>();
+
+                    try
+                    {
+                        // Get the Type object corresponding to Sudoku.
+                        Type myType = typeof(Sudoku);
+                        // Get the PropertyInfo object by passing the property name.
+                        PropertyInfo myTextBoxInfoCellProp = myType.GetProperty(propertyName);
+                        // Update the property name.
+                        var stack = myTextBoxInfoCellProp.GetValue(this, null);
+
+                        currStack = (List<string>)stack;
+
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        MessageBox.Show("The property does not exist in Sudoku class." + e.Message);
+                    }
+
+                    if (currStack.Count > 0)
+                    {
+                        currStack = currStack.Distinct().ToList();
+
+                        string currSwap = currStack[currStack.Count - 1];
+                        string firstEl = currStack[0];
+
+                        Tuple<int, int> posTup = new Tuple<int, int>(rowLast, colLast);
+                        Tuple<Tuple<int, int>, string> inTup = new Tuple<Tuple<int, int>, string>(posTup, currSwap);
+
+                        MovesRedo.Push(inTup);
+                        Moves.Push(beforeLastEl);
+                        currStack.RemoveAt(currStack.Count - 1);
+
+                        if (currStack.Count == 0)
+                        {
+                            Matrix[rowLast, colLast] = "-2";
+                        }
+                        else
+                        {
+                            string lastVersionOfTheCell = currStack[currStack.Count - 1];
+                            Tuple<int, int> rowsCols01 = new Tuple<int, int>(rowLast, colLast);
+                            Tuple<Tuple<int, int>, string> ds1 = new Tuple<Tuple<int, int>, string>(rowsCols01, lastVersionOfTheCell);
+
+                            if (!Moves.Contains(ds1))
+                            {
+                                Matrix[rowLast, colLast] = "-2";
+                                MovesRedo.Pop();
+                                inTup = new Tuple<Tuple<int, int>, string>(posTup, firstEl);
+                                MovesRedo.Push(inTup);
+                            }
+                            else
+                                Matrix[rowLast, colLast] = lastVersionOfTheCell;
+                        }
+                    }
+                    else
+                    {
+                        //string lastVersionOfTheCell = currStack[currStack.Count - 1];
+                        Tuple<int, int> rowsCols01 = new Tuple<int, int>(rowLast, colLast);
+                        Tuple<Tuple<int, int>, string> ds1 = new Tuple<Tuple<int, int>, string>(rowsCols01, Matrix[rowLast, colLast]);
+
+                        MovesRedo.Push(ds1);
+                        Matrix[rowLast, colLast] = "-2";
+                    }
+
+
+                }
+            }
+
+            MovesCopy = new Stack<Tuple<Tuple<int, int>, string>>(Moves);
+            MovesRedoCopy = MovesRedo;
+            MovesNumber = Moves.Count;
+            buildSudukuByMatrix();
+        }
+
+        public void RedoClicked()
+        {
+            if (MovesRedo.Count == 0)
+            {
+                MessageBox.Show("There no redo!");
+            }
+            else
+            {
+                var lastMoveRedo = movesRedo.Pop();
+
+                var tupLast = lastMoveRedo.Item1;
+                int rowLast = tupLast.Item1;
+                int colLast = tupLast.Item2;
+                string tupVal = lastMoveRedo.Item2;
+
+                Tuple<int, int> posThis = new Tuple<int, int>(rowLast, colLast);
+                Tuple<Tuple<int, int>, string> outTup = new Tuple<Tuple<int, int>, string>(posThis, tupVal);
+
+                Matrix[rowLast, colLast] = tupVal;
+
+                Moves.Push(lastMoveRedo);
+
+                MovesCopy = new Stack<Tuple<Tuple<int, int>, string>>(Moves);
+                MovesRedoCopy = MovesRedo ;
+                
+                buildSudukuByMatrix();
+            }
+        }
+
         public void startNewGame(string dificulty)
         {
             if (GameInProgress)
@@ -2996,6 +3932,7 @@ namespace WpfApp4
         {
             showGrid();
             // Clear all the cells
+            Moves.Clear();
             clearAllCells();
 
             GameInProgress = true;

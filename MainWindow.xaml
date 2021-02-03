@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp4"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="800">
 
     <Window.Resources>
 
@@ -59,7 +59,37 @@
         </Style>
 
     </Window.Resources>
+
     <StackPanel>
+        <StackPanel.Background>
+            <ImageBrush ImageSource="SudokuImage.png" />
+        </StackPanel.Background>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_Controls">
+                    <MenuItem Click="mnuUndo_Click" Header="_Undo">
+                        <MenuItem.Icon>
+                            <Image Source="UndoIcon.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <MenuItem Click="mnuRedo_Click" Header="_Redo">
+                        <MenuItem.Icon>
+                            <Image Source="RedoIcon.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="_Manage">
+                    <MenuItem Click="mnuStatistic_Click" Header="_Statistics">
+                        <MenuItem.Icon>
+                            <Image Source="StatisticsIcon.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Click="mnuShowSolution_Click" Header="_Show Solution" IsCheckable="True" IsChecked="True" />
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+        
         <Grid Height="415" Margin="0,0,-0.4,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
@@ -101,6 +131,7 @@
                     Grid.Column="0">
 
                 <Label HorizontalAlignment="Left"
+                       FontSize="25"
                     Height="39" 
                     VerticalAlignment="Top"
                     Width="153"

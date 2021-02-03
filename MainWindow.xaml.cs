@@ -989,6 +989,38 @@ namespace WpfApp4
             }
         }
 
+        private void mnuUndo_Click(object sender, RoutedEventArgs e)
+        {
+            if (Sudoku != null)
+            {
+                Sudoku.UndoClicked();
+            }
+        }
+
+        private void mnuRedo_Click(object sender, RoutedEventArgs e)
+        {
+            if (Sudoku != null)
+            {
+                Sudoku.RedoClicked();
+            }
+        }
+
+        private void mnuStatistic_Click(object sender, RoutedEventArgs e)
+        {
+            if (Sudoku != null)
+            {
+                //Sudoku.CheckResult();
+            }
+        }
+
+        private void mnuShowSolution_Click(object sender, RoutedEventArgs e)
+        {
+            if (Sudoku != null)
+            {
+                //Sudoku.CheckResult();
+            }
+        }
+
         /// <summary>
         /// Launch the Game Complete dialog.
         /// </summary>

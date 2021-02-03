@@ -126,5 +126,17 @@
   <ItemGroup>
     <Resource Include="Updates.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="StatisticsIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="RedoIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UndoIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="SudokuImage.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
