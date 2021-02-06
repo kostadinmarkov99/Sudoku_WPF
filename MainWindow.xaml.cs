@@ -48,7 +48,7 @@ namespace WpfApp4
                 ComboBoxItem typeItem = (ComboBoxItem)cboDifficulty.SelectedItem;
                 string difficulty = typeItem.Content.ToString();
 
-                Sudoku.startNewGame(difficulty);
+                Sudoku.LoadNewGame(difficulty);
             }
         }
 
@@ -1009,7 +1009,7 @@ namespace WpfApp4
         {
             if (Sudoku != null)
             {
-                //Sudoku.CheckResult();
+                Sudoku.StatisticClicked();
             }
         }
 
@@ -1017,7 +1017,7 @@ namespace WpfApp4
         {
             if (Sudoku != null)
             {
-                //Sudoku.CheckResult();
+                Sudoku.ShowSolution();
             }
         }
 
@@ -1036,6 +1036,79 @@ namespace WpfApp4
             finally
             {
                 gameComplete = null;                                // Release the window pointer
+            }
+        }
+
+        /// <summary>
+        /// Launch the Game Complete dialog.
+        /// </summary>
+        internal void ShowGameStatisticDialog()
+        {
+            StatisticWindow gameStat;
+            try
+            {
+                gameStat = new StatisticWindow(Sudoku);        // Instantiate a new instance of the window and pass it the Sudoku instance
+                gameStat.Owner = this;                          // Set the owner to this window
+                gameStat.ShowDialog();                          // Display the dialog
+            }
+            finally
+            {
+                gameStat = null;                                // Release the window pointer
+            }
+        }
+
+        /// <summary>
+        /// Launch the Game Save dialog.
+        /// </summary>
+        internal string ShowGameSaveDialog()
+        {
+            SaveGame saveGame;
+            try
+            {
+                saveGame = new SaveGame();                              // Instantiate a new instance of the window
+                saveGame.Owner = this;                                  // Set the owner to this window
+                System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;    // Figure out the current mouse position relative to the whole screen
+                saveGame.Left = point.X + 20;                           // Set the left edge equal to the mouse pointer + 20 pixels
+                saveGame.Top = point.Y - (saveGame.Height / 2);         // Set the middle of the window vertically where the mouse clicked
+                saveGame.ShowDialog();
+                // Now show the dialog
+
+                return saveGame.FileName;
+            }
+            finally
+            {
+                saveGame = null;                                        // Release the window pointer
+            }
+        }
+
+        /// <summary>
+        /// Save the Current Game for the future.
+        /// </summary>
+        /// 
+        private void mnuSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (Sudoku != null)
+            {
+                Sudoku.SaveClick();
+            }
+        }
+
+        /// <summary>
+        /// Save the Current Game for the future.
+        /// </summary>
+        private void mnuNewGame_Click(object sender, RoutedEventArgs e)
+        {
+            if (Sudoku != null)
+            {
+                Sudoku.NewGameClick();
+            }
+        }
+
+        private void btnSho_Click(object sender, RoutedEventArgs e)
+        {
+            if(Sudoku != null)
+            {
+                sudoku.ShoClick();
             }
         }
     }

@@ -18,7 +18,7 @@ namespace WpfApp4
         private DateTime _startTime;
         private Timer _timer;
 
-        internal string ElapsedTime { get; private set; }
+        internal string ElapsedTime { get;  set; }
 
         internal event EventHandler<GameTimerEventArgs> GameTimerEvent;
 
@@ -131,6 +131,30 @@ namespace WpfApp4
             catch (Exception)
             {
                 ElapsedTime = _initialValue;                    // Error, initialize the elapsed time
+            }
+        }
+
+        internal void ChangeElapsed(string elapsed)
+        {
+            try
+            {
+                if ((_timer != null) && (_timer.Enabled))   // Is the timer running?
+                {
+                    //_timer.Enabled = false;                 // Stop it
+                    TimeSpan ts = TimeSpan.Parse(elapsed);
+                    Properties.Settings.Default.ElapsedTime = ts; // Save it to the application configuration
+                    _initialValue = ElapsedTime;
+                    RaiseEvent(_initialValue);                  // Raise an event
+                    //RaiseEvent(elapsed);                         // Raise an event
+                }
+            }
+            catch (Exception)
+            {
+                // TODO: What to do here?
+            }
+            finally
+            {
+                _timer = null;                              // Set the timer variable to null
             }
         }
 

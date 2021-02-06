@@ -66,6 +66,20 @@
         </StackPanel.Background>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_Menu">
+                    <MenuItem Click="mnuSave_Click" Header="_Save Game">
+                        <MenuItem.Icon>
+                            <Image Source="SaveGame.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <MenuItem Click="mnuNewGame_Click" Header="_New Game">
+                        <MenuItem.Icon>
+                            <Image Source="NewGameIcon.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+
                 <MenuItem Header="_Controls">
                     <MenuItem Click="mnuUndo_Click" Header="_Undo">
                         <MenuItem.Icon>
@@ -85,11 +99,15 @@
                             <Image Source="StatisticsIcon.png" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Click="mnuShowSolution_Click" Header="_Show Solution" IsCheckable="True" IsChecked="True" />
+                    <MenuItem Click="mnuShowSolution_Click" Header="_Show Solution">
+                        <MenuItem.Icon>
+                            <Image Source="ShowSolution.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
             </Menu>
         </DockPanel>
-        
+
         <Grid Height="415" Margin="0,0,-0.4,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
@@ -147,6 +165,7 @@
                     Grid.Column="0">
 
                 <Button  x:Name="btnCheck" Click="btnCheck_Click" Canvas.Left="27" IsEnabled="{Binding IsEnabledCheckedButton,  Mode=TwoWay}" Canvas.Top="19" Height="39" Width="153" >Check</Button>
+                <Button  x:Name="btnSho" Click="btnSho_Click" Canvas.Left="27" Canvas.Top="63" Height="22" Width="73" >Sho</Button>
 
                 <Button  x:Name="btnCancel" Click="btnCancel_Click" Canvas.Left="27" Canvas.Top="98" Height="30" Width="153" >Cancel</Button>
             </Canvas>
@@ -370,7 +389,7 @@
 
                 <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding Get73, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled73}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick73"/>
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Get74, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled74}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick74"/>
-                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Get75, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled75}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MouseDoubleClick="TextBox_MouseDoubleClick75"/>
+                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Get75, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled75}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick75"/>
 
                 <TextBox Grid.Row="2" Grid.Column="0" Text="{Binding Get83, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled83}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick83"/>
                 <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Get84, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding TextBoxEnabled84}" FontSize="20" HorizontalContentAlignment="Center" Padding="0, 7, 0, 0" MaxLength="1" MouseDoubleClick="TextBox_MouseDoubleClick84"/>

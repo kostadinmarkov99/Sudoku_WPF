@@ -18,3 +18,9 @@ C:\Users\PC\source\repos\WpfApp4\obj\Debug\InputPad.baml
 C:\Users\PC\source\repos\WpfApp4\obj\Debug\WpfApp4.csproj.CopyComplete
 C:\Users\PC\source\repos\WpfApp4\obj\Debug\GameComplete.g.cs
 C:\Users\PC\source\repos\WpfApp4\obj\Debug\GameComplete.baml
+C:\Users\PC\source\repos\WpfApp4\obj\Debug\SaveGame.g.cs
+C:\Users\PC\source\repos\WpfApp4\obj\Debug\SaveGame.baml
+C:\Users\PC\source\repos\WpfApp4\obj\Debug\NewGame.g.cs
+C:\Users\PC\source\repos\WpfApp4\obj\Debug\NewGame.baml
+C:\Users\PC\source\repos\WpfApp4\obj\Debug\StatisticWindow.g.cs
+C:\Users\PC\source\repos\WpfApp4\obj\Debug\StatisticWindow.baml

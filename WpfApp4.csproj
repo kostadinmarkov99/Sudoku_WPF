@@ -72,7 +72,16 @@
     <Compile Include="InputPad.xaml.cs">
       <DependentUpon>InputPad.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NewGame.xaml.cs">
+      <DependentUpon>NewGame.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NewGamePuzzle.cs" />
+    <Compile Include="SaveGame.xaml.cs">
+      <DependentUpon>SaveGame.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StatisticWindow.xaml.cs">
+      <DependentUpon>StatisticWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Sudoku.cs" />
     <Compile Include="TimerClass.cs" />
     <Page Include="GameComplete.xaml">
@@ -95,6 +104,18 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="NewGame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SaveGame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StatisticWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -137,6 +158,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="SudokuImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="SaveGame.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="NewGameIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ShowSolution.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

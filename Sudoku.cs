@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Timers;
 
 namespace WpfApp4
 {
     public class Sudoku : INotifyPropertyChanged
     {
         private string[,] matrix = new string[9, 9];
+        private string[,] matrixCopy = new string[9, 9];
         private string[,] startingMatrix;
         private string[,] solvedMatrix;
         private MainWindow _view;                               // Save the window
@@ -27,6 +30,60 @@ namespace WpfApp4
         int lastColInStack = -1;
         bool doNotFill = false;
         private int movesNumber;
+        private string statisticString = "";
+        private int solvedSudokuGames = 0;
+        private string difficulty;
+        private string gameStatistic;
+        private bool isCheckedSolutionButton = false;
+        private bool isUncheckedSolutionButton = true;
+
+        public bool IsCheckedSolutionButton
+        {
+            get { return isCheckedSolutionButton; }
+            set
+            {
+                isCheckedSolutionButton = value;
+            }
+        }
+
+        public bool IsUncheckedSolutionButton
+        {
+            get { return isUncheckedSolutionButton; }
+            set
+            {
+                isUncheckedSolutionButton = value;
+            }
+        }
+
+        public string GameStatistic
+        {
+            get { return gameStatistic; }
+            set { gameStatistic = value; }
+        }
+
+        public string Difficulty
+        {
+            get { return difficulty; }
+            set { difficulty = value; }
+        }
+
+        public int SolvedSudokuGames
+        {
+            get { return solvedSudokuGames; }
+            set
+            {
+                solvedSudokuGames = value;
+            }
+        }
+
+        public string StatisticString
+        {
+            get { return statisticString; }
+            set
+            {
+                statisticString = value;
+            }
+        }
 
         public int MovesNumber
         {
@@ -596,6 +653,15 @@ namespace WpfApp4
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public string[,] MatrixCopy
+        {
+            get { return matrixCopy; }
+            set
+            {
+                matrixCopy = value;
+            }
+        }
+
         public string[,] Matrix
         {
             get { return matrix; }
@@ -694,10 +760,291 @@ namespace WpfApp4
         }
 
         private static readonly Regex _regex = new Regex("[^0-9.-]+"); //regex that matches disallowed text
-        private static bool IsTextAllowed(string text)
+
+        private bool isInRowAndColUniqueValue(int row, int col, string value)
         {
+            if (!isMatrixEmpty()) return true;
+            int s = Matrix.Length;
+
+
+            bool flag = true;
+
+            int copyRowFront = row;
+            int copyRowBack = row;
+            int copyColFront = col;
+            int copyColBack = col;
+
+            while(copyRowFront != 8)
+            {
+                copyRowFront++;
+
+                string matValue = Matrix[copyRowFront, col];
+
+                if (matValue == value) { flag = false; return flag; }
+            }
+
+            while (copyRowBack != 0)
+            {
+                copyRowBack--;
+
+                string matValue = Matrix[copyRowBack, col];
+
+                if (matValue == value) { flag = false; return flag; }
+            }
+
+            while(copyColFront != 8)
+            {
+                copyColFront++;
+
+                string val = Matrix[row, copyColFront];
+
+                if (val == value) { flag = false; return flag; } 
+            }
+
+            while(copyColBack != 0)
+            {
+                copyColBack--;
+
+                string val = Matrix[row, copyColBack];
+
+                if (val == value) { flag = false; return flag; }
+            }
+
+            return flag;
+        }
+
+        /*private bool helpFunc(int row, int col, string value)
+        {
+
+        }*/
+
+        private bool valueInRectangle(int row, int col, int rowMin, int rowMax, int colMin, int colMax, string value)
+        {
+            bool flag = true;
+
+            int copyFrontRow = row;
+            int copyFrontRowOne = row;
+            int copyBackRow = row;
+            int copyBackRowOne = row;
+            int copyFrontCol = col;
+            int copyFrontColOne = col;
+            int copyBackCol = col;
+            int copyBackColOne = col;
+
+            while (copyFrontRow != rowMin)
+            {
+                copyFrontColOne = col;
+                copyFrontRow--;
+
+                //string val = Matrix[row, copyFrontCol];
+
+                while (copyFrontColOne != colMax)
+                {
+                    copyFrontColOne++;
+
+                    var val = Matrix[copyFrontRow, copyFrontColOne];
+
+                    if (val == value) flag = false;
+                }
+
+            }
+
+            while (copyBackRow != rowMin)
+            {
+                copyBackColOne = col;
+                copyBackRow--;
+
+                while (copyBackColOne != colMin)
+                {
+                    copyBackColOne--;
+
+                    string val = Matrix[copyBackRow, copyBackColOne];
+
+                    if (val == value) flag = false;
+                }
+
+            }
+
+            while (copyFrontCol != colMax)
+            {
+                copyFrontRowOne = row;
+                copyFrontCol++;
+
+                //string val = Matrix[row, copyFrontCol];
+
+                while (copyFrontRowOne != rowMax)
+                {
+                    copyFrontRowOne++;
+
+                    string val = Matrix[copyFrontRowOne, copyFrontCol];
+
+                    if (val == value) flag = false;
+                }
+
+            }
+
+            while (copyBackCol != colMin)
+            {
+                copyBackRowOne = row;
+                copyBackCol--;
+
+                while (copyBackRowOne != rowMax)
+                {
+                    copyBackRowOne++;
+
+                    string val = Matrix[copyBackRowOne, copyBackCol];
+
+                    if (val == value) flag = false;
+                }
+
+            }
+
+
+            return flag;
+        }
+
+        private bool isRectangleUniue(int row, int col, string value)
+        {
+            if (!isMatrixEmpty()) return true;
+
+            bool flag = true;
+
+            int rowMin = -1;
+            int rowMax = -1;
+            int colMin = -1;
+            int colMax = -1;
+
+            if (row <= 2)
+            {
+                
+                if (col <= 2)
+                {
+
+                    rowMin = 0;
+                    rowMax = 2;
+                    colMin = 0;
+                    colMax = 2;
+
+                    flag = valueInRectangle(row, col, rowMin, rowMax, colMin, colMax, value);
+                }
+                else if(col <= 5)
+                {
+                    rowMin = 0;
+                    rowMax = 2;
+                    colMin = 3;
+                    colMax = 5;
+
+                    flag = valueInRectangle(row, col, rowMin, rowMax, colMin, colMax, value);
+                }
+                else
+                {
+                    rowMin = 0;
+                    rowMax = 2;
+                    colMin = 6;
+                    colMax = 8;
+
+                    flag = valueInRectangle(row, col, rowMin, rowMax, colMin, colMax, value);
+                }
+            }
+            else if (row <= 5)
+            {
+                if (col <= 2)
+                {
+
+                    rowMin = 3;
+                    rowMax = 5;
+                    colMin = 0;
+                    colMax = 2;
+
+                    flag = valueInRectangle(row, col, rowMin, rowMax, colMin, colMax, value);            
+                }
+                else if (col <= 5)
+                {
+                    rowMin = 3;
+                    rowMax = 5;
+                    colMin = 3;
+                    colMax = 5;
+
+                    flag = valueInRectangle(row, col, rowMin, rowMax, colMin, colMax, value);
+                    
+                }
+                else
+                {
+                    rowMin = 3;
+                    rowMax = 5;
+                    colMin = 6;
+                    colMax = 8;
+
+                    flag = valueInRectangle(row, col, rowMin, rowMax, colMin, colMax, value);           
+                }
+            }
+            else
+            {
+                if (col <= 2)
+                {
+
+                    rowMin = 6;
+                    rowMax = 8;
+                    colMin = 0;
+                    colMax = 2;
+
+                    flag = valueInRectangle(row, col, rowMin, rowMax, colMin, colMax, value);
+                }
+                else if (col <= 5)
+                {
+                    rowMin = 6;
+                    rowMax = 8;
+                    colMin = 3;
+                    colMax = 5;
+
+                    flag = valueInRectangle(row, col, rowMin, rowMax, colMin, colMax, value);
+                }
+                else
+                {
+                    rowMin = 6;
+                    rowMax = 8;
+                    colMin = 6;
+                    colMax = 8;
+
+                    flag = valueInRectangle(row, col, rowMin, rowMax, colMin, colMax, value);
+                }
+            }
+
+            return flag;
+
+        }
+
+        private bool IsTextAllowed(string text, int row, int col)
+        {
+            bool rowColUnique = isInRowAndColUniqueValue(row, col, text);
+            bool rectangleUnique = isRectangleUniue(row, col, text);
+
+            //if (!rectangleUnique || !rowColUnique) return false;
+
+            if (!rowColUnique) return false;
+            if (!rectangleUnique) return false;
+            if (text == null) return false;
             return !_regex.IsMatch(text);
         }
+
+        private bool isMatrixEmpty()
+        {
+            try
+            {
+                string firstEl = Matrix[0, 0];
+                if (firstEl == null) return false;
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        
 
         #region Private Properties for cells
         private string get00;
@@ -1763,11 +2110,12 @@ namespace WpfApp4
                 {
                     get00 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 0, 0))
                 {
                     get00 = value;
 
                     createPushTupple(0, 0, value);
+                    if (value == "") value = "0";
                     Matrix[0, 0] = value;
                     OnPropertyChanged("Get00");
                 }
@@ -1785,17 +2133,13 @@ namespace WpfApp4
                 {
                     get01 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 0, 1))
                 {
-                    bool isThisTextCellEnabled = getThisIsEnabledVal(0, 1);
-                    if (!isThisTextCellEnabled && value != "")
-                    {
-                        Tuple<int, int> pos = new Tuple<int, int>(0, 1);
-                        Tuple<Tuple<int, int>, string> insideTuple = new Tuple<Tuple<int, int>, string>(pos, value);
-                        Moves.Push(insideTuple);
-                    }
-                    Matrix[0, 1] = value;
                     get01 = value;
+
+                    createPushTupple(0, 1, value);
+                    if (value == "") value = "0";
+                    Matrix[0, 1] = value;
                     OnPropertyChanged("Get01");
                 }
             }
@@ -1812,11 +2156,12 @@ namespace WpfApp4
                 {
                     get02 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 0, 2))
                 {
                     createPushTupple(0, 2, value);
-                    Matrix[0, 2] = value;
                     get02 = value;
+                    if (value == "") value = "0";
+                    Matrix[0, 2] = value;
                     OnPropertyChanged("Get02");
                 }
             }
@@ -1833,10 +2178,11 @@ namespace WpfApp4
                 {
                     get03 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 0, 3))
                 {
                     createPushTupple(0, 3, value);
                     get03 = value;
+                    if (value == "") value = "0";
                     Matrix[0, 3] = value;
                     OnPropertyChanged("Get03");
                 }
@@ -1855,10 +2201,11 @@ namespace WpfApp4
                 {
                     get04 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 0, 4))
                 {
                     createPushTupple(0, 4, value);
                     get04 = value;
+                    if (value == "") value = "0";
                     Matrix[0, 4] = value;
                     OnPropertyChanged("Get04");
                 }
@@ -1876,10 +2223,11 @@ namespace WpfApp4
                 {
                     get05 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 0, 5))
                 {
                     createPushTupple(0, 5, value);
                     get05 = value;
+                    if (value == "") value = "0";
                     Matrix[0, 5] = value;
                     OnPropertyChanged("Get05");
                 }
@@ -1897,11 +2245,13 @@ namespace WpfApp4
                 {
                     get06 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 0, 6))
                 {
                     createPushTupple(0, 6, value);
-                    Matrix[0, 6] = value;
                     get06 = value;
+                    if (value == "") value = "0";
+                    Matrix[0, 6] = value;
+
                     OnPropertyChanged("Get06");
                 }
             }
@@ -1918,10 +2268,11 @@ namespace WpfApp4
                 {
                     get07 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 0, 7))
                 {
                     createPushTupple(0, 7, value);
                     get07 = value;
+                    if (value == "") value = "0";
                     Matrix[0, 7] = value;
                     OnPropertyChanged("Get07");
                 }
@@ -1939,10 +2290,11 @@ namespace WpfApp4
                 {
                     get08 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 0, 8))
                 {
                     createPushTupple(0, 8, value);
                     get08 = value;
+                    if (value == "") value = "0";
                     Matrix[0, 8] = value;
                     OnPropertyChanged("Get08");
                 }
@@ -1958,10 +2310,11 @@ namespace WpfApp4
                 {
                     get10 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 1, 0))
                 {
                     createPushTupple(1, 0, value);
                     get10 = value;
+                    if (value == "") value = "0";
                     Matrix[1, 0] = value;
                     OnPropertyChanged("Get10");
                 }
@@ -1977,10 +2330,11 @@ namespace WpfApp4
                 {
                     get11 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 1, 1))
                 {
                     createPushTupple(1, 1, value);
                     get11 = value;
+                    if (value == "") value = "0";
                     Matrix[1, 1] = value;
                     OnPropertyChanged("Get11");
                 }
@@ -1996,10 +2350,11 @@ namespace WpfApp4
                 {
                     get12 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 1, 2))
                 {
                     createPushTupple(1, 2, value);
                     get12 = value;
+                    if (value == "") value = "0";
                     Matrix[1, 2] = value;
                     OnPropertyChanged("Get12");
                 }
@@ -2015,10 +2370,11 @@ namespace WpfApp4
                 {
                     get13 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 1, 3))
                 {
                     createPushTupple(1, 3, value);
                     get13 = value;
+                    if (value == "") value = "0";
                     Matrix[1, 3] = value;
                     OnPropertyChanged("Get13");
                 }
@@ -2034,10 +2390,11 @@ namespace WpfApp4
                 {
                     get14 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 1, 4))
                 {
                     createPushTupple(1, 4, value);
                     get14 = value;
+                    if (value == "") value = "0";
                     Matrix[1, 4] = value;
                     OnPropertyChanged("Get14");
                 }
@@ -2053,10 +2410,11 @@ namespace WpfApp4
                 {
                     get15 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 1, 5))
                 {
                     createPushTupple(1, 5, value);
                     get15 = value;
+                    if (value == "") value = "0";
                     Matrix[1, 5] = value;
                     OnPropertyChanged("Get15");
                 }
@@ -2072,10 +2430,11 @@ namespace WpfApp4
                 {
                     get16 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 1, 6))
                 {
                     createPushTupple(1, 6, value);
                     get16 = value;
+                    if (value == "") value = "0";
                     Matrix[1, 6] = value;
                     OnPropertyChanged("Get16");
                 }
@@ -2091,10 +2450,11 @@ namespace WpfApp4
                 {
                     get17 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 1, 7))
                 {
                     createPushTupple(1, 7, value);
                     get17 = value;
+                    if (value == "") value = "0";
                     Matrix[1, 7] = value;
                     OnPropertyChanged("Get17");
                 }
@@ -2110,10 +2470,11 @@ namespace WpfApp4
                 {
                     get18 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 1, 8))
                 {
                     createPushTupple(1, 8, value);
                     get18 = value;
+                    if (value == "") value = "0";
                     Matrix[1, 8] = value;
                     OnPropertyChanged("Get18");
                 }
@@ -2128,10 +2489,11 @@ namespace WpfApp4
                 {
                     get20 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 2, 0))
                 {
                     createPushTupple(2, 0, value);
                     get20 = value;
+                    if (value == "") value = "0";
                     Matrix[2, 0] = value;
                     OnPropertyChanged("Get20");
                 }
@@ -2147,10 +2509,11 @@ namespace WpfApp4
                 {
                     get21 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 2, 1))
                 {
                     createPushTupple(2, 1, value);
                     get21 = value;
+                    if (value == "") value = "0";
                     Matrix[2, 1] = value;
                     OnPropertyChanged("Get21");
                 }
@@ -2166,10 +2529,11 @@ namespace WpfApp4
                 {
                     get22 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 2, 2))
                 {
                     createPushTupple(2, 2, value);
                     get22 = value;
+                    if (value == "") value = "0";
                     Matrix[2, 2] = value;
                     OnPropertyChanged("Get22");
                 }
@@ -2185,10 +2549,11 @@ namespace WpfApp4
                 {
                     get23 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 2, 3))
                 {
                     createPushTupple(2, 3, value);
                     get23 = value;
+                    if (value == "") value = "0";
                     Matrix[2, 3] = value;
                     OnPropertyChanged("Get23");
                 }
@@ -2204,10 +2569,11 @@ namespace WpfApp4
                 {
                     get24 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 2, 4))
                 {
                     createPushTupple(2, 4, value);
                     get24 = value;
+                    if (value == "") value = "0";
                     Matrix[2, 4] = value;
                     OnPropertyChanged("Get24");
                 }
@@ -2223,10 +2589,11 @@ namespace WpfApp4
                 {
                     get25 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 2, 5))
                 {
                     createPushTupple(2, 5, value);
                     get25 = value;
+                    if (value == "") value = "0";
                     Matrix[2, 5] = value;
                     OnPropertyChanged("Get25");
                 }
@@ -2242,10 +2609,11 @@ namespace WpfApp4
                 {
                     get26 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 2, 6))
                 {
                     createPushTupple(2, 6, value);
                     get26 = value;
+                    if (value == "") value = "0";
                     Matrix[2, 6] = value;
                     OnPropertyChanged("Get26");
                 }
@@ -2261,10 +2629,11 @@ namespace WpfApp4
                 {
                     get27 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 2, 7))
                 {
                     createPushTupple(2, 7, value);
                     get27 = value;
+                    if (value == "") value = "0";
                     Matrix[2, 7] = value;
                     OnPropertyChanged("Get27");
                 }
@@ -2280,10 +2649,11 @@ namespace WpfApp4
                 {
                     get28 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 2, 8))
                 {
                     createPushTupple(2, 8, value);
                     get28 = value;
+                    if (value == "") value = "0";
                     Matrix[2, 8] = value;
                     OnPropertyChanged("Get28");
                 }
@@ -2299,10 +2669,11 @@ namespace WpfApp4
                 {
                     get30 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 3, 0))
                 {
                     createPushTupple(3, 0, value);
                     get30 = value;
+                    if (value == "") value = "0";
                     Matrix[3, 0] = value;
                     OnPropertyChanged("Get30");
                 }
@@ -2318,10 +2689,11 @@ namespace WpfApp4
                 {
                     get31 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 3, 1))
                 {
                     createPushTupple(3, 1, value);
                     get31 = value;
+                    if (value == "") value = "0";
                     Matrix[3, 1] = value;
                     OnPropertyChanged("Get31");
                 }
@@ -2337,10 +2709,11 @@ namespace WpfApp4
                 {
                     get32 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 3, 2))
                 {
                     createPushTupple(3, 2, value);
                     get32 = value;
+                    if (value == "") value = "0";
                     Matrix[3, 2] = value;
                     OnPropertyChanged("Get32");
                 }
@@ -2356,10 +2729,11 @@ namespace WpfApp4
                 {
                     get33 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 3, 3))
                 {
                     createPushTupple(3, 3, value);
                     get33 = value;
+                    if (value == "") value = "0";
                     Matrix[3, 3] = value;
                     OnPropertyChanged("Get33");
                 }
@@ -2375,10 +2749,11 @@ namespace WpfApp4
                 {
                     get34 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 3, 4))
                 {
                     createPushTupple(3, 4, value);
                     get34 = value;
+                    if (value == "") value = "0";
                     Matrix[3, 4] = value;
                     OnPropertyChanged("Get34");
                 }
@@ -2394,10 +2769,11 @@ namespace WpfApp4
                 {
                     get35 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 3, 5))
                 {
                     createPushTupple(3, 5, value);
                     get35 = value;
+                    if (value == "") value = "0";
                     Matrix[3, 5] = value;
                     OnPropertyChanged("Get35");
                 }
@@ -2413,10 +2789,11 @@ namespace WpfApp4
                 {
                     get36 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 3, 6))
                 {
                     createPushTupple(3, 6, value);
                     get36 = value;
+                    if (value == "") value = "0";
                     Matrix[3, 6] = value;
                     OnPropertyChanged("Get36");
                 }
@@ -2432,10 +2809,11 @@ namespace WpfApp4
                 {
                     get37 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 3, 7))
                 {
                     createPushTupple(3, 7, value);
                     get37 = value;
+                    if (value == "") value = "0";
                     Matrix[3, 7] = value;
                     OnPropertyChanged("Get37");
                 }
@@ -2451,10 +2829,11 @@ namespace WpfApp4
                 {
                     get38 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 3, 8))
                 {
                     createPushTupple(3, 8, value);
                     get38 = value;
+                    if (value == "") value = "0";
                     Matrix[3, 8] = value;
                     OnPropertyChanged("Get38");
                 }
@@ -2470,10 +2849,11 @@ namespace WpfApp4
                 {
                     get40 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 4, 0))
                 {
                     createPushTupple(4, 0, value);
                     get40 = value;
+                    if (value == "") value = "0";
                     Matrix[4, 0] = value;
                     OnPropertyChanged("Get40");
                 }
@@ -2489,10 +2869,11 @@ namespace WpfApp4
                 {
                     get41 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 4, 1))
                 {
                     createPushTupple(4, 1, value);
                     get41 = value;
+                    if (value == "") value = "0";
                     Matrix[4, 1] = value;
                     OnPropertyChanged("Get41");
                 }
@@ -2508,10 +2889,11 @@ namespace WpfApp4
                 {
                     get42 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 4, 2))
                 {
                     createPushTupple(4, 2, value);
                     get42 = value;
+                    if (value == "") value = "0";
                     Matrix[4, 2] = value;
                     OnPropertyChanged("Get42");
                 }
@@ -2527,10 +2909,11 @@ namespace WpfApp4
                 {
                     get43 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 4, 3))
                 {
                     createPushTupple(4, 3, value);
                     get43 = value;
+                    if (value == "") value = "0";
                     Matrix[4, 3] = value;
                     OnPropertyChanged("Get43");
                 }
@@ -2546,10 +2929,11 @@ namespace WpfApp4
                 {
                     get44 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 4, 4))
                 {
                     createPushTupple(4, 4, value);
                     get44 = value;
+                    if (value == "") value = "0";
                     Matrix[4, 4] = value;
                     OnPropertyChanged("Get44");
                 }
@@ -2565,10 +2949,11 @@ namespace WpfApp4
                 {
                     get45 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 4, 5))
                 {
                     createPushTupple(4, 5, value);
                     get45 = value;
+                    if (value == "") value = "0";
                     Matrix[4, 5] = value;
                     OnPropertyChanged("Get45");
                 }
@@ -2584,10 +2969,11 @@ namespace WpfApp4
                 {
                     get46 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 4, 6))
                 {
                     createPushTupple(4, 6, value);
                     get46 = value;
+                    if (value == "") value = "0";
                     Matrix[4, 6] = value;
                     OnPropertyChanged("Get46");
                 }
@@ -2603,10 +2989,11 @@ namespace WpfApp4
                 {
                     get47 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 4, 7))
                 {
                     createPushTupple(4, 7, value);
                     get47 = value;
+                    if (value == "") value = "0";
                     Matrix[4, 7] = value;
                     OnPropertyChanged("Get47");
                 }
@@ -2622,15 +3009,16 @@ namespace WpfApp4
                 {
                     get48 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 4, 8))
                 {
                     createPushTupple(4, 8, value);
                     get48 = value;
+                    if (value == "") value = "0";
                     Matrix[4, 8] = value;
                     OnPropertyChanged("Get48");
                 }
             }
-        }
+        }   
 
         public string Get50
         {
@@ -2641,15 +3029,16 @@ namespace WpfApp4
                 {
                     get50 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 5, 0))
                 {
                     createPushTupple(5, 0, value);
                     get50 = value;
+                    if (value == "") value = "0";
                     Matrix[5, 0] = value;
                     OnPropertyChanged("Get50");
                 }
             }
-        }
+        }             
 
         public string Get51
         {
@@ -2660,10 +3049,11 @@ namespace WpfApp4
                 {
                     get51 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 5, 1))
                 {
                     createPushTupple(5, 1, value);
                     get51 = value;
+                    if (value == "") value = "0";
                     Matrix[5, 1] = value;
                     OnPropertyChanged("Get51");
                 }
@@ -2679,10 +3069,11 @@ namespace WpfApp4
                 {
                     get52 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 5, 2))
                 {
                     createPushTupple(5, 2, value);
                     get52 = value;
+                    if (value == "") value = "0";
                     Matrix[5, 2] = value;
                     OnPropertyChanged("Get52");
                 }
@@ -2698,10 +3089,11 @@ namespace WpfApp4
                 {
                     get53 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 5, 3))
                 {
                     createPushTupple(5, 3, value);
                     get53 = value;
+                    if (value == "") value = "0";
                     Matrix[5, 3] = value;
                     OnPropertyChanged("Get53");
                 }
@@ -2717,10 +3109,11 @@ namespace WpfApp4
                 {
                     get54 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 5, 4))
                 {
                     createPushTupple(5, 4, value);
                     get54 = value;
+                    if (value == "") value = "0";
                     Matrix[5, 4] = value;
                     OnPropertyChanged("Get54");
                 }
@@ -2736,10 +3129,11 @@ namespace WpfApp4
                 {
                     get55 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 5, 5))
                 {
                     createPushTupple(5, 5, value);
                     get55 = value;
+                    if (value == "") value = "0";
                     Matrix[5, 5] = value;
                     OnPropertyChanged("Get55");
                 }
@@ -2755,10 +3149,11 @@ namespace WpfApp4
                 {
                     get56 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 5, 6))
                 {
                     createPushTupple(5, 6, value);
                     get56 = value;
+                    if (value == "") value = "0";
                     Matrix[5, 6] = value;
                     OnPropertyChanged("Get56");
                 }
@@ -2774,10 +3169,11 @@ namespace WpfApp4
                 {
                     get57 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 5, 7))
                 {
                     createPushTupple(5, 7, value);
                     get57 = value;
+                    if (value == "") value = "0";
                     Matrix[5, 7] = value;
                     OnPropertyChanged("Get57");
                 }
@@ -2793,10 +3189,11 @@ namespace WpfApp4
                 {
                     get58 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 5, 8))
                 {
                     createPushTupple(5, 8, value);
                     get58 = value;
+                    if (value == "") value = "0";
                     Matrix[5, 8] = value;
                     OnPropertyChanged("Get58");
                 }
@@ -2812,10 +3209,11 @@ namespace WpfApp4
                 {
                     get60 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 6, 0))
                 {
                     createPushTupple(6, 0, value);
                     get60 = value;
+                    if (value == "") value = "0";
                     Matrix[6, 0] = value;
                     OnPropertyChanged("Get60");
                 }
@@ -2831,10 +3229,11 @@ namespace WpfApp4
                 {
                     get61 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 6, 1))
                 {
                     createPushTupple(6, 1, value);
                     get61 = value;
+                    if (value == "") value = "0";
                     Matrix[6, 1] = value;
                     OnPropertyChanged("Get61");
                 }
@@ -2850,10 +3249,11 @@ namespace WpfApp4
                 {
                     get62 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 6, 2))
                 {
                     createPushTupple(6, 2, value);
                     get62 = value;
+                    if (value == "") value = "0";
                     Matrix[6, 2] = value;
                     OnPropertyChanged("Get62");
                 }
@@ -2869,10 +3269,11 @@ namespace WpfApp4
                 {
                     get63 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 6, 3))
                 {
                     createPushTupple(6, 3, value);
                     get63 = value;
+                    if (value == "") value = "0";
                     Matrix[6, 3] = value;
                     OnPropertyChanged("Get63");
                 }
@@ -2888,10 +3289,11 @@ namespace WpfApp4
                 {
                     get64 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 6, 4))
                 {
                     createPushTupple(6, 4, value);
                     get64 = value;
+                    if (value == "") value = "0";
                     Matrix[6, 4] = value;
                     OnPropertyChanged("Get64");
                 }
@@ -2907,10 +3309,11 @@ namespace WpfApp4
                 {
                     get65 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 6, 5))
                 {
                     createPushTupple(6, 5, value);
                     get65 = value;
+                    if (value == "") value = "0";
                     Matrix[6, 5] = value;
                     OnPropertyChanged("Get65");
                 }
@@ -2926,10 +3329,11 @@ namespace WpfApp4
                 {
                     get66 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 6, 6))
                 {
                     createPushTupple(6, 6, value);
                     get66 = value;
+                    if (value == "") value = "0";
                     Matrix[6, 6] = value;
                     OnPropertyChanged("Get66");
                 }
@@ -2945,10 +3349,11 @@ namespace WpfApp4
                 {
                     get67 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 6, 7))
                 {
                     createPushTupple(6, 7, value);
                     get67 = value;
+                    if (value == "") value = "0";
                     Matrix[6, 7] = value;
                     OnPropertyChanged("Get67");
                 }
@@ -2964,10 +3369,11 @@ namespace WpfApp4
                 {
                     get68 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 6, 8))
                 {
                     createPushTupple(6, 8, value);
                     get68 = value;
+                    if (value == "") value = "0";
                     Matrix[6, 8] = value;
                     OnPropertyChanged("Get68");
                 }
@@ -2983,10 +3389,11 @@ namespace WpfApp4
                 {
                     get70 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 7, 0))
                 {
                     createPushTupple(7, 0, value);
                     get70 = value;
+                    if (value == "") value = "0";
                     Matrix[7, 0] = value;
                     OnPropertyChanged("Get70");
                 }
@@ -3002,10 +3409,11 @@ namespace WpfApp4
                 {
                     get71 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 7, 1))
                 {
                     createPushTupple(7, 1, value);
                     get71 = value;
+                    if (value == "") value = "0";
                     Matrix[7, 1] = value;
                     OnPropertyChanged("Get71");
                 }
@@ -3021,10 +3429,11 @@ namespace WpfApp4
                 {
                     get72 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 7, 2))
                 {
                     createPushTupple(7, 2, value);
                     get72 = value;
+                    if (value == "") value = "0";
                     Matrix[7, 2] = value;
                     OnPropertyChanged("Get72");
                 }
@@ -3040,10 +3449,11 @@ namespace WpfApp4
                 {
                     get73 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 7, 3))
                 {
                     createPushTupple(7, 3, value);
                     get73 = value;
+                    if (value == "") value = "0";
                     Matrix[7, 3] = value;
                     OnPropertyChanged("Get73");
                 }
@@ -3059,10 +3469,11 @@ namespace WpfApp4
                 {
                     get74 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 7, 4))
                 {
                     createPushTupple(7, 4, value);
                     get74 = value;
+                    if (value == "") value = "0";
                     Matrix[7, 4] = value;
                     OnPropertyChanged("Get74");
                 }
@@ -3078,10 +3489,11 @@ namespace WpfApp4
                 {
                     get75 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 7, 5))
                 {
                     createPushTupple(7, 5, value);
                     get75 = value;
+                    if (value == "") value = "0";
                     Matrix[7, 5] = value;
                     OnPropertyChanged("Get75");
                 }
@@ -3097,10 +3509,11 @@ namespace WpfApp4
                 {
                     get76 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 7, 6))
                 {
                     createPushTupple(7, 6, value);
                     get76 = value;
+                    if (value == "") value = "0";
                     Matrix[7, 6] = value;
                     OnPropertyChanged("Get76");
                 }
@@ -3116,10 +3529,11 @@ namespace WpfApp4
                 {
                     get77 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 7, 7))
                 {
                     createPushTupple(7, 7, value);
                     get77 = value;
+                    if (value == "") value = "0";
                     Matrix[7, 7] = value;
                     OnPropertyChanged("Get77");
                 }
@@ -3135,10 +3549,11 @@ namespace WpfApp4
                 {
                     get78 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 7, 8))
                 {
                     createPushTupple(7, 8, value);
                     get78 = value;
+                    if (value == "") value = "0";
                     Matrix[7, 8] = value;
                     OnPropertyChanged("Get78");
                 }
@@ -3154,10 +3569,11 @@ namespace WpfApp4
                 {
                     get80 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 8, 0))
                 {
                     createPushTupple(8, 0, value);
                     get80 = value;
+                    if (value == "") value = "0";
                     Matrix[8, 0] = value;
                     OnPropertyChanged("Get80");
                 }
@@ -3173,10 +3589,11 @@ namespace WpfApp4
                 {
                     get81 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 8, 1))
                 {
                     createPushTupple(8, 1, value);
                     get81 = value;
+                    if (value == "") value = "0";
                     Matrix[8, 1] = value;
                     OnPropertyChanged("Get81");
                 }
@@ -3192,10 +3609,11 @@ namespace WpfApp4
                 {
                     get82 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 8, 2))
                 {
                     createPushTupple(8, 2, value);
                     get82 = value;
+                    if (value == "") value = "0";
                     Matrix[8, 2] = value;
                     OnPropertyChanged("Get82");
                 }
@@ -3211,10 +3629,11 @@ namespace WpfApp4
                 {
                     get83 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 8, 3))
                 {
                     createPushTupple(8, 3, value);
                     get83 = value;
+                    if (value == "") value = "0";
                     Matrix[8, 3] = value;
                     OnPropertyChanged("Get83");
                 }
@@ -3230,10 +3649,11 @@ namespace WpfApp4
                 {
                     get84 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 8 ,4))
                 {
                     createPushTupple(8, 4, value);
                     get84 = value;
+                    if (value == "") value = "0";
                     Matrix[8, 4] = value;
                     OnPropertyChanged("Get84");
                 }
@@ -3249,10 +3669,11 @@ namespace WpfApp4
                 {
                     get85 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 8, 5))
                 {
                     createPushTupple(8, 5, value);
                     get85 = value;
+                    if (value == "") value = "0";
                     Matrix[8, 5] = value;
                     OnPropertyChanged("Get85");
                 }
@@ -3268,10 +3689,11 @@ namespace WpfApp4
                 {
                     get86 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 8, 6))
                 {
                     createPushTupple(8, 6, value);
                     get86 = value;
+                    if (value == "") value = "0";
                     Matrix[8, 6] = value;
                     OnPropertyChanged("Get86");
                 }
@@ -3287,10 +3709,11 @@ namespace WpfApp4
                 {
                     get87 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 8, 7))
                 {
                     createPushTupple(8, 7, value);
                     get87 = value;
+                    if (value == "") value = "0";
                     Matrix[8, 7] = value;
                     OnPropertyChanged("Get87");
                 }
@@ -3307,10 +3730,11 @@ namespace WpfApp4
                 {
                     get88 = "";
                 }
-                if (IsTextAllowed(value))
+                if (IsTextAllowed(value, 8, 8))
                 {
                     createPushTupple(8, 8, value);
                     get88 = value;
+                    if (value == "") value = "0";
                     Matrix[8, 8] = value;
                     OnPropertyChanged("Get88");
                 }
@@ -3452,7 +3876,6 @@ namespace WpfApp4
         /// </summary>
         internal void CellClicked(int row, int col)
         {
-
             ProcessNumberPad(row, col, _view.ShowNumberPad());  // Yes, display the number pad and process it
         }
 
@@ -3595,6 +4018,66 @@ namespace WpfApp4
             IsEnabledResetButton = false;
             // Pause the timer
             //EnableGameControls(false, false);                       // Disable the game controls and hide the grid
+        }
+
+        public void ShowSolution()
+        {
+            GameTimeElapsed = _timer.ElapsedTime;               // Save the elapsed time
+            _timer.StopTimer();
+            IsEnabledPausedButton = false;
+            IsEnabledResetButton = false;
+            IsEnabledCheckedButton = false;
+
+            if (SolvedMatrix == null)
+            {
+                MessageBox.Show("There is no loaded game!");
+            }
+            else
+            {
+                for (int row = 0; row < 9; row++)
+                {
+                    for (int col = 0; col < 9; col++)
+                    {
+                        string currentElement = SolvedMatrix[row, col];
+
+                        if (currentElement == "0")
+                        {
+                            //Get the name of the isEnabled with the row and col possition
+                            string isEnabledProp = "TextBoxEnabled" + row + col;
+
+                            // Get the Type object corresponding to Sudoku.
+                            Type myType = typeof(Sudoku);
+                            // Get the PropertyInfo object by passing the property name.
+                            PropertyInfo myIsEnableProp = myType.GetProperty(isEnabledProp);
+                            // Update the property name.
+                            myIsEnableProp.SetValue(this, false);
+                        }
+                        else
+                        {
+                            string propertyName = "Get" + row + col;
+
+                            try
+                            {
+                                // Get the Type object corresponding to Sudoku.
+                                Type myType = typeof(Sudoku);
+                                // Get the PropertyInfo object by passing the property name.
+                                PropertyInfo myTextBoxInfoCellProp = myType.GetProperty(propertyName);
+                                // Update the property name.
+                                myTextBoxInfoCellProp.SetValue(this, currentElement);
+                            }
+                            catch (NullReferenceException e)
+                            {
+                                MessageBox.Show("The property does not exist in Sudoku class." + e.Message);
+                            }
+
+                            string sds = "asdasd";
+                            /*PropertyInfo pinfo = typeof(YourType).GetProperty("YourProperty");
+                            object value = pinfo.GetValue(YourInstantiatedObject, null);*/
+                        }
+                    }
+                }
+            }
+
         }
 
         public void ResumeGame()
@@ -3843,13 +4326,13 @@ namespace WpfApp4
                 Moves.Push(lastMoveRedo);
 
                 MovesCopy = new Stack<Tuple<Tuple<int, int>, string>>(Moves);
-                MovesRedoCopy = MovesRedo ;
-                
+                MovesRedoCopy = MovesRedo;
+
                 buildSudukuByMatrix();
             }
         }
 
-        public void startNewGame(string dificulty)
+        public void LoadNewGame(string dificulty)
         {
             if (GameInProgress)
             {
@@ -3861,7 +4344,6 @@ namespace WpfApp4
                     IsEnabledResetButton = true;
                     IsEnabledCheckedButton = true;
                 }
-
             }
             else
             {
@@ -3904,32 +4386,57 @@ namespace WpfApp4
 
         public void CheckResult()
         {
+            string result = "";
+            for (int row = 0; row < 9; row++)
+            {
+                for (int col = 0; col < 9; col++)
+                {
+                    if(col == 8)
+                        result += SolvedMatrix[row, col] + ", ";
+                    else result += SolvedMatrix[row, col] + " ";
+                }
+                result += "\n";
+            } 
+
+
             bool isFinished = false;
             int numberOfRightAnswers = 0;
             for (int row = 0; row < 9; row++)
             {
                 for (int col = 0; col < 9; col++)
                 {
-                    if (Matrix[row, col] == SolvedMatrix[row, col])
+                    if (int.Parse(Matrix[row, col]) >= 1 && int.Parse(Matrix[row, col]) <= 9)
                     {
                         numberOfRightAnswers++;
-                    }
+                    }   
                 }
             }
 
             if (numberOfRightAnswers == 81)                  //The Puzzle is solved correctly
             {
+                solvedSudokuGames++;
                 GameTimeElapsed = _timer.ElapsedTime;               // Save the elapsed time
                 _timer.StopTimer();
                 IsEnabledPausedButton = false;
                 IsEnabledResetButton = false;
                 IsEnabledCheckedButton = false;
+                //string timeCompletion = _timer.ElapsedTime;
+                StatisticString += $"{solvedSudokuGames} is solved at: {DateTime.Now} with difficulty {Difficulty} with time {GameTimeElapsed}\n";
+
                 _view.ShowGameCompletedDialog();
             }
         }
 
+        public void StatisticClicked()
+        {
+            GameStatistic = StatisticString;
+
+            _view.ShowGameStatisticDialog();
+        }
+
         public void newGame(string dificulty)
         {
+            Difficulty = dificulty;
             showGrid();
             // Clear all the cells
             Moves.Clear();
@@ -3958,6 +4465,8 @@ namespace WpfApp4
                                                            { "7", "4", "9", "3", "6", "2", "5", "1", "8" } };*/
 
             StartingMatrix = Matrix;
+
+            MatrixCopy = Matrix;
             SolvedMatrix = newGamePuzzle.SolvedMatrix;
 
             /*SolvedMatrix = new string[9, 9]{ { "8", "7", "1", "2", "4", "3", "6", "5", "9" },
@@ -4003,6 +4512,31 @@ namespace WpfApp4
                 for (int col = 0; col < 9; col++)
                 {
                     string currentElement = newGamePuzzle.Mat[row, col];
+                    
+                    if(row == 0 && col == 1)
+                    {
+                        int ba = 1;
+                    }
+                    if (row == 7 && col == 2)
+                    {
+                        int ba = 1;
+                    }
+
+                    if (row == 8 && col == 2)
+                    {
+                        int ba = 1;
+                    }
+
+                    if (row == 5 && col == 8)
+                    {
+                        int ba = 1;
+                    }
+
+                    if (row == 8 && col == 4)
+                    {
+                        int ba = 1;
+                    }
+
                     if (currentElement == "0")
                     {
                         //Get the name of the isEnabled with the row and col possition
@@ -4042,6 +4576,183 @@ namespace WpfApp4
                 }
             }
 
+        }
+
+        private string Stringify(string[,] matrix)
+        {
+            string result = "";
+
+            for (int row = 0; row < 9; row++)
+            {
+                for (int col = 0; col < 9; col++)
+                {
+                    string currentElement = Matrix[row, col];
+
+                    result += $"<{row}-{col}>{currentElement},";
+                }
+            }
+
+            return result;
+        }
+
+        public void SaveClick()
+        {
+            string fileNameFromForm = _view.ShowGameSaveDialog();  // Display the SaveGame Window and get the name of the file it
+
+            string startupPath = System.IO.Directory.GetCurrentDirectory();
+            string fileName = $"{startupPath}\\{fileNameFromForm}.txt";
+            //fileName = fileName.Replace("\\", "/");
+            string matrixString = Stringify(Matrix);
+            var time = _timer.ElapsedTime;
+            //matrixString += time;
+            try
+            {
+                // Check if file already exists. If yes, delete it.     
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                // Create a new file and write the information from the current version of the matrix in it
+                using (StreamWriter sw = File.CreateText(fileName))
+                {
+                    sw.WriteLine(matrixString);
+                    sw.WriteLine(time);
+                }
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("The game is not saved!");
+            }
+
+            MessageBox.Show($"The game is saved as {fileNameFromForm}!");
+        }
+
+        public void NewGameClick()
+        {
+            string fileNameFromForm = _view.ShowGameSaveDialog();  // Display the NewGame Window and get the name of the file it
+
+            string startupPath = System.IO.Directory.GetCurrentDirectory();
+            string fileName = $"{startupPath}\\{fileNameFromForm}.txt";
+            //fileName = fileName.Replace("\\", "/");
+            string readedPuzzle = "";
+            string time = "";
+            try
+            {
+                // Check if file already exists. If yes, delete it.     
+                /*if (File.Exists(fileName))
+                {
+                    MessageBox.Show("There is no saved game with that name!");
+                }
+                else*/
+                {
+
+                    // Write file contents on console.     
+                    using (StreamReader sr = File.OpenText(fileName))
+                    {
+                        int counter = 0;
+                        string result = "";
+                        while ((result = sr.ReadLine()) != null)
+                        {
+                            if (counter == 0)
+                                readedPuzzle += result;
+                            else time += result;
+                            counter++;
+                        }
+                    }
+                }
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("There is no game with this name {0}", fileNameFromForm);
+            }
+
+            if (readedPuzzle != "")
+            {
+                string[] valueAndPos = readedPuzzle.Split(',');
+                _timer.ChangeElapsed(time);
+
+                foreach (var value in valueAndPos)
+                {
+                    try
+                    {
+                        string valueForCell = "0";
+                        int row = int.Parse(value[1].ToString());
+                        int col = int.Parse(value[3].ToString());
+
+                        if (value.Length > 5)
+                        {
+                            valueForCell = value[5].ToString();
+                        }
+
+                        Matrix[row, col] = valueForCell;
+
+                        // TODO empty the redo and undo stacks
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Uncorrect format of the data in the Selected File!");
+                    }
+                }
+
+                for (int row = 0; row < 9; row++)
+                {
+                    for (int col = 0; col < 9; col++)
+                    {
+                        string currentElement = Matrix[row, col];
+                        if (currentElement == "0")
+                        {
+                            //Get the name of the isEnabled with the row and col possition
+                            string isEnabledProp = "TextBoxEnabled" + row + col;
+
+                            // Get the Type object corresponding to Sudoku.
+                            Type myType = typeof(Sudoku);
+                            // Get the PropertyInfo object by passing the property name.
+                            PropertyInfo myIsEnableProp = myType.GetProperty(isEnabledProp);
+                            // Update the property name.
+                            myIsEnableProp.SetValue(this, false);
+                        }
+                        else
+                        {
+                            string propertyName = "Get" + row + col;
+
+                            Matrix[row, col] = currentElement;
+
+                            try
+                            {
+                                // Get the Type object corresponding to Sudoku.
+                                Type myType = typeof(Sudoku);
+                                // Get the PropertyInfo object by passing the property name.
+                                PropertyInfo myTextBoxInfoCellProp = myType.GetProperty(propertyName);
+                                // Update the property name.
+                                myTextBoxInfoCellProp.SetValue(this, currentElement);
+                            }
+                            catch (NullReferenceException e)
+                            {
+                                MessageBox.Show("The property does not exist in Sudoku class." + e.Message);
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        public void ShoClick()
+        {
+            string result = "";
+
+            for (int row = 0; row < 9; row++)
+            {
+                for (int col = 0; col < 9; col++)
+                {
+                    result += Matrix[row, col] + " ";
+                }
+                result += "/n";
+            }
+
+
+            string sd = "";
         }
 
         protected void OnPropertyChanged(string propertyName)
