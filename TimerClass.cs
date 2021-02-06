@@ -138,24 +138,27 @@ namespace WpfApp4
         {
             try
             {
-                if ((_timer != null) && (_timer.Enabled))   // Is the timer running?
-                {
-                    //_timer.Enabled = false;                 // Stop it
+                //if ((_timer != null))   // Is the timer running?
+                //{
+                    _timer.Enabled = false;                 // Stop it
                     TimeSpan ts = TimeSpan.Parse(elapsed);
-                    Properties.Settings.Default.ElapsedTime = ts; // Save it to the application configuration
-                    _initialValue = ElapsedTime;
-                    RaiseEvent(_initialValue);                  // Raise an event
-                    //RaiseEvent(elapsed);                         // Raise an event
-                }
+                    Properties.Settings.Default.ElapsedTime = ts; // Save it to the application 
+                ElapsedTime = ts.ToString(_timeFormat);       // Save the elapsed time
+                _initialValue = ElapsedTime;
+                //_timer.Enabled = true;
+                TimeSpan diff = Properties.Settings.Default.ElapsedTime;    // Load the previously saved time
+                _startTime = DateTime.Now - diff;                           // Compute the difference
+                _timer.Enabled = true;
+                RaiseEvent(_initialValue);                  // Raise an event
+                //RaiseEvent(elapsed);  
+                // Raise an event
+                //}
             }
             catch (Exception)
             {
                 // TODO: What to do here?
             }
-            finally
-            {
-                _timer = null;                              // Set the timer variable to null
-            }
+           
         }
 
         protected virtual void RaiseEvent(string value)

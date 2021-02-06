@@ -73,7 +73,7 @@
                         </MenuItem.Icon>
                     </MenuItem>
 
-                    <MenuItem Click="mnuNewGame_Click" Header="_New Game">
+                    <MenuItem Click="mnuNewGame_Click" Header="_Saved Game">
                         <MenuItem.Icon>
                             <Image Source="NewGameIcon.png" />
                         </MenuItem.Icon>
@@ -165,7 +165,6 @@
                     Grid.Column="0">
 
                 <Button  x:Name="btnCheck" Click="btnCheck_Click" Canvas.Left="27" IsEnabled="{Binding IsEnabledCheckedButton,  Mode=TwoWay}" Canvas.Top="19" Height="39" Width="153" >Check</Button>
-                <Button  x:Name="btnSho" Click="btnSho_Click" Canvas.Left="27" Canvas.Top="63" Height="22" Width="73" >Sho</Button>
 
                 <Button  x:Name="btnCancel" Click="btnCancel_Click" Canvas.Left="27" Canvas.Top="98" Height="30" Width="153" >Cancel</Button>
             </Canvas>

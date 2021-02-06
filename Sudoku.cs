@@ -676,7 +676,7 @@ namespace WpfApp4
             get { return startingMatrix; }
             set
             {
-                startingMatrix = matrix;
+                startingMatrix = value;
             }
         }
 
@@ -4091,7 +4091,7 @@ namespace WpfApp4
         }
 
         public void ResetGame()
-        {
+        {     
             clearAllCells();
             _timer.ResetTimer();                                // Reset the timer
             IsEnabledCheckedButton = true;
@@ -4439,7 +4439,6 @@ namespace WpfApp4
             Difficulty = dificulty;
             showGrid();
             // Clear all the cells
-            Moves.Clear();
             clearAllCells();
 
             GameInProgress = true;
@@ -4464,7 +4463,7 @@ namespace WpfApp4
                                                            { "6", "5", "8", "4", "7", "1", "9", "3", "2" },
                                                            { "7", "4", "9", "3", "6", "2", "5", "1", "8" } };*/
 
-            StartingMatrix = Matrix;
+            StartingMatrix = (string[,])Matrix.Clone();
 
             MatrixCopy = Matrix;
             SolvedMatrix = newGamePuzzle.SolvedMatrix;
@@ -4575,7 +4574,7 @@ namespace WpfApp4
                     }
                 }
             }
-
+            undoAndRedoClear();
         }
 
         private string Stringify(string[,] matrix)
@@ -4595,8 +4594,10 @@ namespace WpfApp4
             return result;
         }
 
-        public void SaveClick()
+        public void SaveClick(System.Windows.Controls.ComboBox cb)
         {
+            int index = cb.SelectedIndex;
+
             string fileNameFromForm = _view.ShowGameSaveDialog();  // Display the SaveGame Window and get the name of the file it
 
             string startupPath = System.IO.Directory.GetCurrentDirectory();
@@ -4617,6 +4618,7 @@ namespace WpfApp4
                 using (StreamWriter sw = File.CreateText(fileName))
                 {
                     sw.WriteLine(matrixString);
+                    sw.WriteLine(index);
                     sw.WriteLine(time);
                 }
             }
@@ -4628,14 +4630,109 @@ namespace WpfApp4
             MessageBox.Show($"The game is saved as {fileNameFromForm}!");
         }
 
-        public void NewGameClick()
+        public void undoAndRedoClear()
         {
-            string fileNameFromForm = _view.ShowGameSaveDialog();  // Display the NewGame Window and get the name of the file it
+            Moves.Clear();
+            if (MovesCopy != null)
+                MovesCopy.Clear();
+            MovesRedo.Clear();
+            if(MovesRedoCopy != null)
+                MovesRedoCopy.Clear();
+
+            Last00.Clear(); 
+            Last01.Clear();
+            Last02.Clear();
+            Last03.Clear();
+            Last04.Clear();
+            Last05.Clear();
+            Last06.Clear();
+            Last07.Clear();
+            Last08.Clear();
+            Last10.Clear();
+            Last11.Clear();
+            Last12.Clear();
+            Last13.Clear();
+            Last14.Clear();
+            Last15.Clear();
+            Last16.Clear();
+            Last17.Clear();
+            Last18.Clear();
+            Last20.Clear();
+            Last21.Clear();
+            Last22.Clear();
+            Last23.Clear();
+            Last24.Clear();
+            Last25.Clear();
+            Last26.Clear();
+            Last27.Clear();
+            Last28.Clear();
+            Last30.Clear();
+            Last31.Clear();
+            Last32.Clear();
+            Last33.Clear();
+            Last34.Clear();
+            Last35.Clear();
+            Last36.Clear();
+            Last37.Clear();
+            Last38.Clear();
+            Last40.Clear();
+            Last41.Clear();
+            Last42.Clear();
+            Last43.Clear();
+            Last44.Clear();
+            Last45.Clear();
+            Last46.Clear();
+            Last47.Clear();
+            Last48.Clear();
+            Last50.Clear();
+            Last51.Clear();
+            Last52.Clear();
+            Last53.Clear();
+            Last54.Clear();
+            Last55.Clear();
+            Last56.Clear();
+            Last57.Clear();
+            Last58.Clear();
+            Last60.Clear();
+            Last61.Clear();
+            Last62.Clear();
+            Last63.Clear();
+            Last64.Clear();
+            Last65.Clear();
+            Last66.Clear();
+            Last67.Clear();
+            Last68.Clear();
+            Last70.Clear();
+            Last71.Clear();
+            Last72.Clear();
+            Last73.Clear();
+            Last74.Clear();
+            Last75.Clear();
+            Last76.Clear();
+            Last77.Clear();
+            Last78.Clear();
+            Last80.Clear();
+            Last81.Clear();
+            Last82.Clear();
+            Last83.Clear();
+            Last84.Clear();
+            Last85.Clear();
+            Last86.Clear();
+            Last87.Clear();
+            Last88.Clear();
+        }
+
+        public void NewGameClick(System.Windows.Controls.ComboBox cb)
+        {
+            clearAllCells();
+
+            string fileNameFromForm = _view.ShowOldGameDialog();  // Display the NewGame Window and get the name of the file it
 
             string startupPath = System.IO.Directory.GetCurrentDirectory();
             string fileName = $"{startupPath}\\{fileNameFromForm}.txt";
             //fileName = fileName.Replace("\\", "/");
             string readedPuzzle = "";
+            string indexCbo = "";
             string time = "";
             try
             {
@@ -4656,6 +4753,7 @@ namespace WpfApp4
                         {
                             if (counter == 0)
                                 readedPuzzle += result;
+                            else if (counter == 1) indexCbo += result;
                             else time += result;
                             counter++;
                         }
@@ -4667,15 +4765,21 @@ namespace WpfApp4
                 MessageBox.Show("There is no game with this name {0}", fileNameFromForm);
             }
 
+            cb.SelectedIndex = int.Parse(indexCbo);
+
             if (readedPuzzle != "")
             {
+                //_timer.StopTimer();
                 string[] valueAndPos = readedPuzzle.Split(',');
+                _timer.ElapsedTime = time;
                 _timer.ChangeElapsed(time);
+                //_timer.StartTimer();
 
                 foreach (var value in valueAndPos)
                 {
                     try
                     {
+                        if (value == "") continue;
                         string valueForCell = "0";
                         int row = int.Parse(value[1].ToString());
                         int col = int.Parse(value[3].ToString());
@@ -4691,10 +4795,12 @@ namespace WpfApp4
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show("Uncorrect format of the data in the Selected File!");
+                        //MessageBox.Show("Uncorrect format of the data in the Selected File!");
                     }
                 }
 
+                StartingMatrix = (string[,])Matrix.Clone();
+                
                 for (int row = 0; row < 9; row++)
                 {
                     for (int col = 0; col < 9; col++)
@@ -4735,24 +4841,7 @@ namespace WpfApp4
                     }
                 }
             }
-
-        }
-
-        public void ShoClick()
-        {
-            string result = "";
-
-            for (int row = 0; row < 9; row++)
-            {
-                for (int col = 0; col < 9; col++)
-                {
-                    result += Matrix[row, col] + " ";
-                }
-                result += "/n";
-            }
-
-
-            string sd = "";
+            undoAndRedoClear();
         }
 
         protected void OnPropertyChanged(string propertyName)

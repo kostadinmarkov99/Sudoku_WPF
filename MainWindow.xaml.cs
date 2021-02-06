@@ -1042,6 +1042,26 @@ namespace WpfApp4
         /// <summary>
         /// Launch the Game Complete dialog.
         /// </summary>
+        internal string ShowOldGameDialog()
+        {
+            NewGame oldGame;
+            try
+            {
+                oldGame = new NewGame();        // Instantiate a new instance of the window and pass it the ViewModel instance
+                oldGame.Owner = this;                          // Set the owner to this window
+                oldGame.ShowDialog();                          // Display the dialog
+
+                return oldGame.FileName;
+            }
+            finally
+            {
+                oldGame = null;                                // Release the window pointer
+            }
+        }
+
+        /// <summary>
+        /// Launch the Game Complete dialog.
+        /// </summary>
         internal void ShowGameStatisticDialog()
         {
             StatisticWindow gameStat;
@@ -1062,7 +1082,7 @@ namespace WpfApp4
         /// </summary>
         internal string ShowGameSaveDialog()
         {
-            SaveGame saveGame;
+               SaveGame saveGame;
             try
             {
                 saveGame = new SaveGame();                              // Instantiate a new instance of the window
@@ -1089,7 +1109,9 @@ namespace WpfApp4
         {
             if (Sudoku != null)
             {
-                Sudoku.SaveClick();
+                System.Windows.Controls.ComboBox cb = cboDifficulty;
+
+                Sudoku.SaveClick(cb);
             }
         }
 
@@ -1100,15 +1122,9 @@ namespace WpfApp4
         {
             if (Sudoku != null)
             {
-                Sudoku.NewGameClick();
-            }
-        }
+                System.Windows.Controls.ComboBox cb = cboDifficulty;
 
-        private void btnSho_Click(object sender, RoutedEventArgs e)
-        {
-            if(Sudoku != null)
-            {
-                sudoku.ShoClick();
+                Sudoku.NewGameClick(cb);
             }
         }
     }
