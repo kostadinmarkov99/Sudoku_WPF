@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sudoku_WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800">
+        Title="Play Sudoku" Height="500" Width="800">
 
     <Window.Resources>
 
@@ -130,7 +130,7 @@
                 <Label Content="Difficulty Level:"
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Top" 
-                    Width="140" Canvas.Left="30" Canvas.Top="25"/>
+                    Width="140" Canvas.Left="60" Canvas.Top="21" FontWeight="Bold" Foreground="Blue"/>
                 <ComboBox x:Name="cboDifficulty" HorizontalAlignment="Left" 
                   VerticalAlignment="Top"
                   Width="140"
@@ -166,7 +166,7 @@
             <!--Creating the botom left buttons-->
             <Canvas Grid.Row="2"
                     Grid.Column="0">
-                
+
                 <Button  x:Name="btnCancel" Click="btnCancel_Click" Canvas.Left="27" Canvas.Top="98" Height="30" Width="153" >Cancel</Button>
             </Canvas>
 
