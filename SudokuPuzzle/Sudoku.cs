@@ -9,9 +9,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Timers;
-using WpfApp4.View;
+using Sudoku_WPF.View;
 
-namespace WpfApp4
+namespace Sudoku_WPF
 {
     public class Sudoku : INotifyPropertyChanged
     {

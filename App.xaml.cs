@@ -5,9 +5,9 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using WpfApp4.View;
+using Sudoku_WPF.View;
 
-namespace WpfApp4
+namespace Sudoku_WPF
 {
     /// <summary>
     /// Interaction logic for App.xaml

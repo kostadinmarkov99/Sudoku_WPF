@@ -26,3 +26,4 @@ C:\Users\PC\source\repos\WpfApp4\obj\Debug\Sudoku_WPF.csproj.GenerateResource.ca
 C:\Users\PC\source\repos\WpfApp4\obj\Debug\Sudoku_WPF.csproj.CopyComplete
 C:\Users\PC\source\repos\WpfApp4\obj\Debug\WpfApp4.exe
 C:\Users\PC\source\repos\WpfApp4\obj\Debug\WpfApp4.pdb
+C:\Users\PC\source\repos\WpfApp4\obj\Debug\Sudoku_WPF.csprojAssemblyReference.cache

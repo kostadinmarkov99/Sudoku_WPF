@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace WpfApp4.View
+namespace Sudoku_WPF.View
 {
     /// <summary>
     /// Interaction logic for StatisticWindow.xaml

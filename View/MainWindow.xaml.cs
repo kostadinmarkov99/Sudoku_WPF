@@ -14,9 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Drawing;
 using System.Windows.Forms;
-using WpfApp4.View;
+using Sudoku_WPF.View;
 
-namespace WpfApp4.View
+namespace Sudoku_WPF.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
