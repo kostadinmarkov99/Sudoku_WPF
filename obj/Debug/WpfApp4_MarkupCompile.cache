@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\PC\source\repos\WpfApp4\App.xaml
-6519737919
+7-1889276995
 
-14-1356901803
+15-1382233009
 171005456274
-GameComplete.xaml;InputPad.xaml;MainWindow.xaml;NewGame.xaml;SaveGame.xaml;StatisticWindow.xaml;
+View\GameComplete.xaml;View\InputPad.xaml;View\MainWindow.xaml;View\NewGame.xaml;View\SaveGame.xaml;View\StatisticWindow.xaml;SudokuMatrix.xaml;
 
 False
 
