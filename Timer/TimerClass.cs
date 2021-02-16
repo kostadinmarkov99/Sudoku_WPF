@@ -140,7 +140,8 @@ namespace Sudoku_WPF
             {
                 //if ((_timer != null))   // Is the timer running?
                 //{
-                    _timer.Enabled = false;                 // Stop it
+                if(_timer == null) _timer = new Timer();
+                _timer.Enabled = false;                 // Stop it
                     TimeSpan ts = TimeSpan.Parse(elapsed);
                     Properties.Settings.Default.ElapsedTime = ts; // Save it to the application 
                 ElapsedTime = ts.ToString(_timeFormat);       // Save the elapsed time

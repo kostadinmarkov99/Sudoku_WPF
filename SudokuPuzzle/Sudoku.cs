@@ -4493,42 +4493,49 @@ namespace Sudoku_WPF
         /// </summary>
         public void CheckResult()
         {
-            string result = "";
-            for (int row = 0; row < 9; row++)
+            if (!GameInProgress)
             {
-                for (int col = 0; col < 9; col++)
-                {
-                    if(col == 8)
-                        result += SolvedMatrix[row, col] + ", ";
-                    else result += SolvedMatrix[row, col] + " ";
-                }
-                result += "\n";
-            } 
-
-            int numberOfRightAnswers = 0;
-            for (int row = 0; row < 9; row++)
-            {
-                for (int col = 0; col < 9; col++)
-                {
-                    if (int.Parse(Matrix[row, col]) >= 1 && int.Parse(Matrix[row, col]) <= 9)
-                    {
-                        numberOfRightAnswers++;
-                    }   
-                }
+                MessageBox.Show("There is no loaded game!");
             }
-
-            if (numberOfRightAnswers == 81)                  //The Puzzle is solved correctly
+            else
             {
-                solvedSudokuGames++;
-                GameTimeElapsed = _timer.ElapsedTime;               // Save the elapsed time
-                _timer.StopTimer();
-                IsEnabledPausedButton = false;
-                IsEnabledResetButton = false;
-                IsEnabledCheckedButton = false;
-                //string timeCompletion = _timer.ElapsedTime;
-                StatisticString += $"{solvedSudokuGames} is solved at: {DateTime.Now} with difficulty {Difficulty} with time {GameTimeElapsed}\n";
+                string result = "";
+                for (int row = 0; row < 9; row++)
+                {
+                    for (int col = 0; col < 9; col++)
+                    {
+                        if (col == 8)
+                            result += SolvedMatrix[row, col] + ", ";
+                        else result += SolvedMatrix[row, col] + " ";
+                    }
+                    result += "\n";
+                }
 
-                _view.ShowGameCompletedDialog();
+                int numberOfRightAnswers = 0;
+                for (int row = 0; row < 9; row++)
+                {
+                    for (int col = 0; col < 9; col++)
+                    {
+                        if (int.Parse(Matrix[row, col]) >= 1 && int.Parse(Matrix[row, col]) <= 9)
+                        {
+                            numberOfRightAnswers++;
+                        }
+                    }
+                }
+
+                if (numberOfRightAnswers == 81)                  //The Puzzle is solved correctly
+                {
+                    solvedSudokuGames++;
+                    GameTimeElapsed = _timer.ElapsedTime;               // Save the elapsed time
+                    _timer.StopTimer();
+                    IsEnabledPausedButton = false;
+                    IsEnabledResetButton = false;
+                    IsEnabledCheckedButton = false;
+                    //string timeCompletion = _timer.ElapsedTime;
+                    StatisticString += $"{solvedSudokuGames} is solved at: {DateTime.Now} with difficulty {Difficulty} with time {GameTimeElapsed}\n";
+
+                    _view.ShowGameCompletedDialog();
+                }
             }
         }
 
@@ -4589,34 +4596,6 @@ namespace Sudoku_WPF
                                                           { "6", "5", "8", "4", "7", "1", "9", "3", "2" },
                                                           { "7", "4", "9", "3", "6", "2", "5", "1", "8" } };
 */
-
-            string result = "";
-
-            for (int i = 0; i < 9; i++)
-            {
-                result += "{ ";
-                for (int j = 0; j < 9; j++)
-                {
-                    if (j == 9 - 1)
-                    {
-                        if (SolvedMatrix[i, j] == "0")
-                            result += $"\'.\'";
-                        else
-                            result += $"\'{SolvedMatrix[i, j]}\'";
-                    }
-                    else
-                    {
-                        if (SolvedMatrix[i, j] == "0")
-                            result += $"\'.\', ";
-                        else
-                            result += $"\'{SolvedMatrix[i, j]}\'," + " ";
-                    }
-                }
-                result += " }";
-                result += "\n";
-            }
-            result += "\n";
-
             for (int row = 0; row < 9; row++)
             {
                 for (int col = 0; col < 9; col++)
@@ -4685,38 +4664,43 @@ namespace Sudoku_WPF
         /// </summary>
         public void SaveClick(System.Windows.Controls.ComboBox cb)
         {
-            int index = cb.SelectedIndex;
-
-            string fileNameFromForm = _view.ShowGameSaveDialog();  // Display the SaveGame Window and get the name of the file it
-
-            string startupPath = System.IO.Directory.GetCurrentDirectory();
-            string fileName = $"{startupPath}\\{fileNameFromForm}.txt";
-            //fileName = fileName.Replace("\\", "/");
-            string matrixString = Stringify(Matrix);
-            var time = _timer.ElapsedTime;
-            //matrixString += time;
-            try
+            if (!GameInProgress)
             {
-                // Check if file already exists. If yes, delete it.     
-                if (File.Exists(fileName))
-                {
-                    File.Delete(fileName);
-                }
+                MessageBox.Show("There is no game for saving!");
+            }
+            else
+            {
+                int index = cb.SelectedIndex;
 
-                // Create a new file and write the information from the current version of the matrix in it
-                using (StreamWriter sw = File.CreateText(fileName))
+                string fileNameFromForm = _view.ShowGameSaveDialog();  // Display the SaveGame Window and get the name of the file it
+
+                string startupPath = System.IO.Directory.GetCurrentDirectory();
+                string fileName = $"{startupPath}\\{fileNameFromForm}.txt";
+                //fileName = fileName.Replace("\\", "/");
+                string matrixString = Stringify(Matrix);
+                var time = _timer.ElapsedTime;
+                //matrixString += time;
+                try
                 {
-                    sw.WriteLine(matrixString);
-                    sw.WriteLine(index);
-                    sw.WriteLine(time);
+                    // Check if file already exists. If yes, delete it.     
+                    if (File.Exists(fileName))
+                    {
+                        File.Delete(fileName);
+                    }
+                    // Create a new file and write the information from the current version of the matrix in it
+                    using (StreamWriter sw = File.CreateText(fileName))
+                    {
+                        sw.WriteLine(matrixString);
+                        sw.WriteLine(index);
+                        sw.WriteLine(time);
+                    }
+                    MessageBox.Show($"The game is saved as {fileNameFromForm}!");
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("The game is not saved!");
                 }
             }
-            catch (Exception)
-            {
-                MessageBox.Show("The game is not saved!");
-            }
-
-            MessageBox.Show($"The game is saved as {fileNameFromForm}!");
         }
 
         /// <summary>
@@ -4820,7 +4804,6 @@ namespace Sudoku_WPF
         public void NewGameClick(System.Windows.Controls.ComboBox cb)
         {
             clearAllCells();
-
             string fileNameFromForm = _view.ShowOldGameDialog();  // Display the NewGame Window and get the name of the file it
 
             string startupPath = System.IO.Directory.GetCurrentDirectory();
@@ -4857,16 +4840,30 @@ namespace Sudoku_WPF
             }
             catch (Exception)
             {
-                MessageBox.Show("There is no game with this name {0}", fileNameFromForm);
+                MessageBox.Show("There is no game with this name"+ fileNameFromForm);
             }
 
-            cb.SelectedIndex = int.Parse(indexCbo);
+            if (indexCbo == "")
+            {
+                //MessageBox.Show("There is no game with this name!");
+            }
+            else
+                cb.SelectedIndex = int.Parse(indexCbo);
 
             if (readedPuzzle != "")
             {
+                if (!GameInProgress)
+                {
+                    showGrid();
+                    // Clear all the cells
+
+                    GameInProgress = true;
+
+                }
                 //_timer.StopTimer();
                 string[] valueAndPos = readedPuzzle.Split(',');
                 _timer.ElapsedTime = time;
+                _timer.StartTimer();
                 _timer.ChangeElapsed(time);
                 //_timer.StartTimer();
 
